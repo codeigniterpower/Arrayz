@@ -205,6 +205,7 @@ class Arrayz
 
 	public function limit()
 	{
+		$this->source = array_values($this->source);
 		$args = func_get_args();
 		$limit = $args[0];
 		$offset = !empty ($args[1]) ? $args[1] : 0 ;
