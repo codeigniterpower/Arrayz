@@ -1,4 +1,5 @@
 <?php
+<?php
 /**
 * Array Manipulations - Inspired from Laravel Collection
 * Developer - Giri Annamalai M
@@ -57,23 +58,23 @@ class Arrayz
 		$op = [];
 		$operator = '=';
 
-		if (func_num_args() == 3) 
+		if (func_num_args() == 3 || func_num_args() == 4)  
 		{			    
 			$search_key = $args[0];
 			$operator = $args[1];
 			$search_value = $args[2];
 		}
-		else			
+		else
 		{			    
 		    $search_key = $args[0];
 		    $search_value = $args[1];
-		}			
+		}
 
 		$op = array_filter($this->source, function($src) use ($search_key, $search_value, $operator) {							 
 			return $this->_operator_check($src[$search_key], $operator, $search_value);			  	
 		},ARRAY_FILTER_USE_BOTH);				
-					
-		if(isset($args[3]) && $args[3])
+		
+		if(isset($args[3]) && $args[3]==TRUE)
 		{
 		  $this->source = $op;
 		}
@@ -210,21 +211,28 @@ class Arrayz
 		$limit = $args[0];
 		$offset = !empty ($args[1]) ? $args[1] : 0 ;
 		$op = [];
-		$cnt = count($this->source);			
+		$cnt = count($this->source);
 		if($limit > $cnt )	
 		{
 			$limit = $cnt;
 		}
 		$i = 0;
-		if( $limit <= 1){
-			$op[] = $this->source[$offset];
+		if( $limit <= 1)
+		{
+			if(isset($this->source[$offset]))
+			{
+				$op[] = $this->source[$offset];				
+			}
 		}
 		else
 		{
 			for($i=0; $i<$limit; $i++)
 			{
-				$op[] = $this->source[$offset];
-				$offset++;
+				if(isset($this->source[$offset]))
+				{
+					$op[] = $this->source[$offset];
+					$offset++;
+				}
 			}
 		}
 		$this->source = $op;
