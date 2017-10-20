@@ -1,5 +1,4 @@
 <?php
-<?php
 /**
 * Array Manipulations - Inspired from Laravel Collection
 * Developer - Giri Annamalai M
