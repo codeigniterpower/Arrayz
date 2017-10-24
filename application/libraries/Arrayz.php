@@ -250,21 +250,16 @@ class Arrayz
 		$op = [];		
 		$select = explode(",", $select);		
 		$i = 0;
-		foreach ($this->source as $k => $v) 
+		array_walk($this->source, function(&$value, &$key) use(&$select, &$op){
+			$op[] = array_intersect_key($value, array_flip($select));
+		});
+		if(count($select)==1)//Return flat array if only one key is selected
 		{
-			foreach ($v as $key => $value) 
-			{				
-				if(in_array($key, $select))
-				{
-					if(count($select)>1)
-					{
-						$op[$i][$key] = $value;
-					}else{
-						$op[$i] = $value;							
-					}
-				}
-			}		
-			$i++;
+			$op2 = [];
+			array_walk_recursive($op, function(&$v, &$k) use(&$search, &$op2){
+				return $op2[] = $v;
+			});			
+			$this->source = $op2;
 		}
 		$this->source = $op;
 		return $this;
