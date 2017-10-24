@@ -58,6 +58,7 @@ Where:
       $arrayz($array)->where('id' ,'1')->get(); // Will return the array where matches id is 1 
 
       $arrayz($array)->where('id' ,'>','3')->get(); //Will return the array where id is greater than 3, =,!=, >, <>, >=, <=, === operators are supported. By default '='.
+      $arrayz($array)->where('id' ,'>','3', TRUE)->get();//Preserve the actual key
 
 WhereIn: 
 ------
