@@ -56,32 +56,50 @@ class Arrayz
 		$args = func_get_args();
 		$op = [];
 		$operator = '=';
-
-		if (func_num_args() == 3 || func_num_args() == 4)  
-		{			    
-			$search_key = $args[0];
-			$operator = $args[1];
-			$search_value = $args[2];
-		}
-		else
-		{			    
-		    $search_key = $args[0];
-		    $search_value = $args[1];
-		}
-
-		$op = array_filter($this->source, function($src) use ($search_key, $search_value, $operator) {							 
-			return $this->_operator_check($src[$search_key], $operator, $search_value);			  	
-		},ARRAY_FILTER_USE_BOTH);				
-		
-		if(isset($args[3]) && $args[3]==TRUE)
+		if(is_string($args[0]))
 		{
-		  $this->source = $op;
+			if (func_num_args() == 3 || func_num_args() == 4)  
+			{			    
+				$search_key = $args[0];
+				$operator = $args[1];
+				$search_value = $args[2];
+			}
+			else
+			{			    
+			    $search_key = $args[0];
+			    $search_value = $args[1];
+			}
+			$preserve = isset($args[4]) && $args[4] ? TRUE : FALSE;
+
+			$op = array_filter($this->source, function($src) use ($search_key, $search_value, $operator) {							 
+				return $this->_operator_check($src[$search_key], $operator, $search_value);			  	
+			},ARRAY_FILTER_USE_BOTH);
+			$this->_preserve_keys($op, $preserve);
 		}
-		else
+		/* Support Condition similar to CI Array-where */
+		if(is_array($args[0]))
 		{
-			$this->source = array_values($op);				
-		}			
-	
+			$condition = $cond = [];
+			array_walk($args[0], function(&$value, &$key) use(&$select, $condition, &$cond){
+				$k = explode(' ',$key);
+				if(isset($k[1]))
+				{					
+					$o['search_key'] = $k[0];
+					$o['optr'] = $k[1];
+					$o['search_value'] = $value;
+				}
+				else
+				{
+					$o['search_key'] = $k[0];
+					$o['optr'] = '=';
+					$o['search_value'] = $value;
+				}
+				$cond[] = $o;
+			});
+			foreach ($cond as $key => $value) {
+				$this->where($value['search_key'], $value['optr'], $value['search_value']);
+			}
+		}
 		return $this;
 	}
 
@@ -90,28 +108,16 @@ class Arrayz
 	*/
 	public function whereIn()
 	{
-		$args = func_get_args();		
-
+		$args = func_get_args();
 		$op = [];
-		if (func_num_args() == 2) 
-		{			    
-			$search_key = $args[0];
-			$search_value = $args[1];
-		}
-		else			
-		{
-		    $search_key = $args[0];
-		    $search_value = $args[1];			
-		}
+		$search_key = $args[0];
+		$search_value = $args[1];
 
-		foreach ($this->source as $k => $v) 
-		{				
-			if( @array_key_exists( $search_key, $v) && @in_array( $v[$search_key], $search_value ) )
-			{	
-				$op [] = $v;
-			}
-		}
-		$this->source = $op;		
+		$op = array_filter($this->source, function($src) use ($search_key, $search_value) {							 
+			return in_array( $src[$search_key], $search_value);
+		},ARRAY_FILTER_USE_BOTH);
+		$preserve = isset($args[2]) && $args[2] ? TRUE : FALSE;
+		$this->_preserve_keys($op, $preserve);//Preserve keys or not		
 		return $this;
 	}
 
@@ -239,8 +245,7 @@ class Arrayz
 	}
 
 	/*
-	* Select keys and return only them
-	* By selecting single array will return flat array
+	* Select the keys and return only them	
 	* @param1: 'id, name, address', must be comma seperated.
 	*/
 	public function select()
@@ -248,18 +253,18 @@ class Arrayz
 		$args = func_get_args();
 		$select = $args[0];
 		$op = [];		
-		$select = explode(",", $select);		
-		$i = 0;
-		array_walk($this->source, function(&$value, &$key) use(&$select, &$op){
-			$op[] = array_intersect_key($value, array_flip($select));
-		});
-		if(count($select)==1)//Return flat array if only one key is selected
+		$select = array_map('trim', explode(",", $select));
+		if(isset($args[1]) && $args[1]==TRUE) //Flat array if only one return key/value exists
 		{
-			$op2 = [];
-			array_walk_recursive($op, function(&$v, &$k) use(&$search, &$op2){
-				return $op2[] = $v;
+			array_walk($this->source, function(&$value, &$key) use(&$select, &$op){
+				$op[] = array_values(array_intersect_key($value, array_flip($select)))[0];
 			});			
-			$this->source = $op2;
+		}
+		else
+		{
+			array_walk($this->source, function(&$value, &$key) use(&$select, &$op){
+				$op[] = array_intersect_key($value, array_flip($select));				
+			});			
 		}
 		$this->source = $op;
 		return $this;
@@ -357,26 +362,16 @@ class Arrayz
 	*/
 	public function whereNotIn()
 	{
-		$args = func_get_args();		
+		$args = func_get_args();
 		$op = [];
-		if (func_num_args() == 2) 
-		{			    
-			$search_key = $args[0];
-			$search_value = $args[1];
-		}
-		else			
-		{
-		    $search_key = $args[0];
-		    $search_value = $args[1];			
-		}
-		foreach ($this->source as $k => $v) 
-		{				
-			if( @array_key_exists( $search_key, $v) && @!in_array( $v[$search_key], $search_value ) )
-			{	
-				$op [] = $v;
-			}
-		}
-		$this->source = $op;			
+		$search_key = $args[0];
+		$search_value = $args[1];
+
+		$op = array_filter($this->source, function($src) use ($search_key, $search_value) {							 
+			return !in_array( $src[$search_key], $search_value);
+		},ARRAY_FILTER_USE_BOTH);
+		$preserve = isset($args[2]) && $args[2] ? TRUE : FALSE;
+		$this->_preserve_keys($op, $preserve);//Preserve keys or not		
 		return $this;
 	}
 
@@ -427,6 +422,18 @@ class Arrayz
 	public function count()
 	{
 		return count($this->source);
+	}
+
+	private function _preserve_keys($op=[], $preserve=TRUE)
+	{
+		if($preserve==TRUE)
+		{
+		  $this->source = $op;
+		}
+		else
+		{
+			$this->source = array_values($op);				
+		}
 	}
 }
 /* End of the file arrayz.php */
