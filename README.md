@@ -53,7 +53,12 @@ select:
       $arrayz($array)->select('id', TRUE)->get(); 
 
       //Select the key found returns  as flat array, if param2 is TRUE.
-
+     
+     $arrayz($array)->select('id,name')->where('state', 'CA')->get();
+     
+     $arrayz($array)->select('id,name')->where('state', 'CA')->group_by('state')->get();
+     
+     //Select the ID and name and check that stats is equal to CA. we can chain almost all methods by this.
 
 Pluck:
 ------    
