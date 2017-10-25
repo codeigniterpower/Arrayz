@@ -1,5 +1,6 @@
 # Arrayz
-Array manipulation library for Codeigniter 3.x
+Array manipulation library for Codeigniter 3.x and Non-Framework PHP
+
 Arrayz Library Functions:
 ------------------------
 Created for two dimensional associative array / result array from codeigniter.
@@ -7,9 +8,12 @@ Created for two dimensional associative array / result array from codeigniter.
 1. Load library and create instance: 
 
 $this->load->library('Arrayz');
+
+For Non-Framework PHP's, include the file. create instance, by following,
+
 $arrayz = new Arrayz;
 
-2. After instance created,
+2. After instance created,You can use as following,
 
 $arrayz($array)->where('id','1')->get();
 
@@ -42,16 +46,16 @@ $array = array (
 select:
 -------
 	
-      $arrayz($array)->select('id')->get(); //Select the key found returns id as flat array
-
       $arrayz($array)->select('id,name')->get(); //Select the key found returns  id, name
+      
+      $arrayz($array)->select('id', TRUE)->get(); //Select the key found returns  as flat array, if param2 is TRUE.
 
 
 Pluck:
 ------    
       $arrayz($array)->pluck('st')->get(); //Support RegEx key which are matching 'st' and returns street, state          
        
-      Most usable case is When Posting ($_POST) Iterator based elements we can use this. count_1, count_2
+      Most usable case is When Posting ($_POST) Iterator based elements. Ex., count_1, count_2
 
 Where:
 ------
@@ -59,14 +63,17 @@ Where:
 
       $arrayz($array)->where('id' ,'>','3')->get(); //Will return the array where id is greater than 3, =,!=, >, <>, >=, <=, === operators are supported. By default '='.
       $arrayz($array)->where('id' ,'>','3', TRUE)->get();//Preserve the actual key
+      $arrayz($array)->where(['id >' => '3', 'name'=> 'Giri'])->get();//Multiple conditions. Similar to CI query builder where.
 
 WhereIn: 
 ------
-      $arrayz($array)->where( 'id', ['1','3'] )->get(); // Will return the array where matches id is 34 and 35
+      $arrayz($array)->whereIn( 'id', ['1','3'] )->get(); // Will return the array where matches id is 34 and 35
+      $arrayz($array)->whereIn( 'id', ['1','3'], TRUE )->get(); // Will return the array where matches id is 34 and 35 and preserve the actual key
 
 WhereNotIn: 
 ------
-      $arrayz($array)->where('id', ['34','35'] )->get(); // Will return the array where not matches id is 34 and 35
+      $arrayz($array)->whereNotIn('id', ['34','35'] )->get(); // Will return the array where not matches id is 34 and 35
+      $arrayz($array)->whereNotIn('id', ['34','35'], TRUE )->get(); // Will return the array where not matches id is 34 and 35
 
 contains:
 --------- 
@@ -111,4 +118,4 @@ Count:
      $arrayz($array)->count(); //Returns the no of array/elements based on the array. similar to array count()
 
 
-This is initiation to show, we can integrate or acheive other frameworks features in Codeigniter.
+This is initiation to show, we can integrate or acheive all frameworks features in Codeigniter and Non-Framework PHP.
