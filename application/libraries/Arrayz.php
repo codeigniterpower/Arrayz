@@ -56,55 +56,49 @@ class Arrayz
 		$args = func_get_args();
 		$op = [];
 		$operator = '=';
-		if(is_string($args[0]))
+		if(is_string($args[0])) //Single where condition
 		{
 			if (func_num_args() == 3 || func_num_args() == 4)  
-			{			    
+			{
 				$search_key = $args[0];
 				$operator = $args[1];
-				$search_value = $args[2];
+				$search_value = $args[2];					
 			}
 			else
-			{			    
+			{
 			    $search_key = $args[0];
 			    $search_value = $args[1];
 			}
-			$preserve = isset($args[4]) && $args[4] ? TRUE : FALSE;
-
-			$op = array_filter($this->source, function($src) use ($search_key, $search_value, $operator) {							 
-				return $this->_operator_check($src[$search_key], $operator, $search_value);			  	
+			$preserve = isset($args[3]) && $args[3] ? TRUE : FALSE;
+			$op = array_filter($this->source, function($src) use ($search_key, $search_value, $operator){
+				return $this->_operator_check($src[$search_key], $operator, $search_value);			
 			},ARRAY_FILTER_USE_BOTH);
 			$this->_preserve_keys($op, $preserve);
 		}
-		/* Support Condition similar to CI Array-where */
+		/* Support multiple AND Conditions similar to CI DB-where */
 		if(is_array($args[0]))
 		{
 			$cond = $args[0];
+			$o = [];
 			$preserve = isset($args[1]) && $args[1] ? TRUE : FALSE;
-			array_walk($this->source, function(&$value, &$key) use(&$op, &$cond, &$preserve){
-				$resp = $i = 0;
-				array_walk($cond, function($v, $k) use(&$resp, &$value) {
-					$k = explode(' ',$k);
-					if(isset($k[1]))
-					{
-						$resp = !($this->_operator_check($value[$k[0]], $k[1], $v)) ? 1 : $resp;						
-					}
-					else
-					{
-						$resp = !($this->_operator_check($value[$k[0]], '=', $v)) ? 1 : $resp;
-					}
-				});
-				if($resp==0)
-				{
-					if($preserve) //Preserve key
-					{
-						$op[$key] = $value;						
-					}
-					else
-					{
-						$op[] = $value;
-					}
+			//Format conditions
+			array_walk($cond, function($v, $k) use(&$resp, &$o) {
+				$key = explode(' ',$k);
+				$key[1] = (isset($key[1]) && $key[1] != "") ? $key[1] : '='; //Default is =
+				$key[2] = $v;
+				$o[] = $key;
+			});
+			$resp = 0;
+			array_walk($this->source, function(&$value, &$key) use(&$op, &$o, &$preserve, &$resp){
+				$resp = 0;
+				foreach ($o as $k => $v) {
+					$resp = !($this->_operator_check($value[$v[0]], $v[1], $v[2])) ? 1 : $resp;	
+					if($resp==1)  break;
 				}
+				if($resp==0) //All conditions are true
+				{
+					($preserve==TRUE) ? ($op[$key] = $value ) : ($op[] = $value); 
+				}				
 			});			
 			$this->source = $op;
 		}
