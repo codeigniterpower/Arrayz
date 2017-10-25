@@ -79,26 +79,34 @@ class Arrayz
 		/* Support Condition similar to CI Array-where */
 		if(is_array($args[0]))
 		{
-			$condition = $cond = [];
-			array_walk($args[0], function(&$value, &$key) use(&$select, $condition, &$cond){
-				$k = explode(' ',$key);
-				if(isset($k[1]))
-				{					
-					$o['search_key'] = $k[0];
-					$o['optr'] = $k[1];
-					$o['search_value'] = $value;
-				}
-				else
+			$cond = $args[0];
+			$preserve = isset($args[1]) && $args[1] ? TRUE : FALSE;
+			array_walk($this->source, function(&$value, &$key) use(&$op, &$cond, &$preserve){
+				$resp = $i = 0;
+				array_walk($cond, function($v, $k) use(&$resp, &$value) {
+					$k = explode(' ',$k);
+					if(isset($k[1]))
+					{
+						$resp = !($this->_operator_check($value[$k[0]], $k[1], $v)) ? 1 : $resp;						
+					}
+					else
+					{
+						$resp = !($this->_operator_check($value[$k[0]], '=', $v)) ? 1 : $resp;
+					}
+				});
+				if($resp==0)
 				{
-					$o['search_key'] = $k[0];
-					$o['optr'] = '=';
-					$o['search_value'] = $value;
+					if($preserve) //Preserve key
+					{
+						$op[$key] = $value;						
+					}
+					else
+					{
+						$op[] = $value;
+					}
 				}
-				$cond[] = $o;
-			});
-			foreach ($cond as $key => $value) {
-				$this->where($value['search_key'], $value['optr'], $value['search_value']);
-			}
+			});			
+			$this->source = $op;
 		}
 		return $this;
 	}
