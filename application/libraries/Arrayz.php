@@ -228,7 +228,7 @@ class Arrayz
 		{
 			if(isset($this->source[$offset]))
 			{
-				$op[] = $this->source[$offset];				
+				$op = $this->source[$offset];				
 			}
 		}
 		else
