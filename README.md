@@ -105,6 +105,32 @@ WhereNotIn:
       $arrayz($array)->whereNotIn('id', ['34','35'], TRUE )->get(); 
 
       // Will return the array where not matches id is 34 and 35
+      
+group_by: 
+---------
+      Groupby by mentioned Key, similar to sql;
+      
+      $arrayz($array)->group_by('id')->get(); 
+
+      // Will return the array group by by fmo id
+      
+order_by: 
+---------
+      Groupby by mentioned Key, similar to sql;
+      
+      $arrayz($array)->where( ['id >', '2 ])->order_by('name', 'asc')->get(); 
+
+      // Will return the array based on where condition sort the array by the name
+
+limit:
+------
+      $arrayz($array)->limit(10)->get(); 
+
+      //Will return the first 10 elements
+
+      $arrayz($array)->limit( 10, 5)->get(); 
+
+      //Will return the 10 elements after the 5 the index (Offset)
 
 contains:
 --------- 
@@ -121,24 +147,6 @@ collapse:
       $arrayz($array)->collapse($array)->get();
 
       //flatten multidimensional array into single array
-
-limit:
-------
-      $arrayz($array)->limit(10)->get(); 
-
-      //Will return the first 10 elements
-
-      $arrayz($array)->limit( 10, 5)->get(); 
-
-      //Will return the 10 elements after the 5 the index (Offset)
-
-group_by: 
----------
-      Groupby by mentioned Key, similar to sql;
-      
-      $arrayz($array)->group_by('id')->get(); 
-
-      // Will return the array group by by fmo id
 
 has:
 ----
