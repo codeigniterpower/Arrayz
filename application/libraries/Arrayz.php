@@ -437,5 +437,22 @@ class Arrayz
 			$this->source = array_values($op);				
 		}
 	}
+		/*
+	* Orderby by Key
+	*/
+	public function order_by()
+	{
+		$args = func_get_args();
+		$op = [];
+		$sort_order = ['asc' => SORT_ASC, 'desc' => SORT_DESC];
+		$this->to_order = $this->source;
+		$args[1] = isset($args[1]) ? $args[1] : 'asc'; 
+		//Select the key
+		$sort_by = $this->select($args[0], TRUE);
+		//Sort
+		array_multisort($sort_by->source, $sort_order[strtolower($args[1])], $this->to_order);
+		$this->source =$this->to_order;
+		return $this;
+	}
 }
 /* End of the file arrayz.php */
