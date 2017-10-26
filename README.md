@@ -9,6 +9,12 @@ Created for two dimensional associative array / result array from codeigniter.
 
 $this->load->library('Arrayz');
 
+For CI,
+
+$arrayz = $this->arrayz;
+
+$arrayz($array)->where('id','1')->get();
+
 For Non-Framework PHP's, include the file. create instance, by following,
 
 $arrayz = new Arrayz;
