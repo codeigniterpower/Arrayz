@@ -144,6 +144,49 @@ like:
 
       //Will return the elements SSN number having 01, in anywhere of the string. similar to %like% in mysql.
       
+select_min:
+----------
+      
+      $arrayz($array)->select_min('id'); 
+
+      //Will return minimum id value      
+      
+      $arrayz($array)->select_min('id', TRUE)->get(); 
+
+      //Will return minimum id value's array     
+      
+select_max:
+----------
+      
+      $arrayz($array)->select_max('id'); 
+
+      //Will return maximum id value      
+      
+      $arrayz($array)->select_max('id', TRUE)->get(); 
+
+      //Will return maximum id value's array           
+      
+select_avg:
+----------
+      
+      $arrayz($array)->select_avg('id'); 
+
+      //Will return calculate the average of the id as value      
+
+select_sum:
+----------
+      
+      $arrayz($array)->select_sum('id'); 
+
+      //Will sum the id value 
+      
+distinct:
+----------
+      
+      $arrayz($array)->distinct('id')->get(); 
+
+      //remove duplicate id array and return distinct
+      
 contains:
 --------- 
       $arrayz($array)->contains('id','34')->get(); 
