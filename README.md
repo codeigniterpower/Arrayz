@@ -138,6 +138,12 @@ limit:
 
       //Will return the 10 elements after the 5 the index (Offset)
 
+like:
+------
+      $arrayz($array)->like('SSN', '01')->get(); 
+
+      //Will return the elements SSN number having 01, in anywhere of the string. similar to %like% in mysql.
+      
 contains:
 --------- 
       $arrayz($array)->contains('id','34')->get(); 
