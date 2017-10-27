@@ -423,8 +423,8 @@ class Arrayz
 		$args = func_get_args();		
 		$op = [];
 		$key = $args[0];
-		$this->select($key);
-		$this->source = array_sum($this->source);		
+		$this->select($key, TRUE);		
+		$this->source = array_sum($this->source);
 		return $this->source;
 	}
 
@@ -478,16 +478,6 @@ class Arrayz
 				$this->matcher($search_string, $value[$search_key], $value);
 			});			
 		}
-		if(is_array($search_key))//WIP
-		{
-			return $this;
-			array_walk($this->source, function(&$value, &$key) use(&$search_key){
-				foreach ($search_key as $k => $v) 
-				{
-					$this->matcher($search_string, $value[$search_key], $value);					
-				}
-			});
-		}
 		$this->source = $this->op;
 		$this->op = [];
 		return $this;
@@ -500,6 +490,66 @@ class Arrayz
 		{
 			$this->op[] = $value;
 		}
+	}
+
+	/* Select a key and sum its values. @param1: single key of array to sum */
+	public function select_sum()
+	{
+		$args = func_get_args();		
+		$op = [];
+		$key = $args[0];
+		$this->select($key, TRUE);		
+		$this->source = array_sum($this->source);
+		return $this->source;
+	}
+
+	/* Select the maximum value using the key */
+	public function select_max()
+	{
+		$args = func_get_args();		
+		$op = [];
+		$key = $args[0];
+		$this->select($key, TRUE);
+		$this->source = max($this->source);
+		return $this->source;
+	}
+
+	/* Select the min value using the key */
+	public function select_min()
+	{
+		$args = func_get_args();		
+		$op = [];
+		$key = $args[0];
+		$this->select($key, TRUE);
+		$this->source = min($this->source);
+		return $this->source;
+	}	
+
+	/* Calculate avg value by key */
+	public function select_avg()
+	{
+		$args = func_get_args();		
+		$op = [];
+		$key = $args[0];
+		$this->select($key, TRUE);
+		$this->source = (array_sum($this->source)/count($this->source));
+		return $this->source;
+	}
+
+	/* Select Distinct values*/
+	public function distinct()
+	{
+		$args = func_get_args();		
+		$op = [];
+		$key = $args[0];
+		$source = $this->source;		
+		$this->select($key, TRUE);
+		$this->source = $s = array_values(array_flip($this->source));
+		array_walk($this->source, function(&$value, &$key) use(&$op, &$source){
+			$op[] = $source[$value];
+		});	
+		$this->source = $op;		
+		return $this;
 	}
 }
 /* End of the file arrayz.php */
