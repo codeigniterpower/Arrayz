@@ -510,8 +510,16 @@ class Arrayz
 		$op = [];
 		$key = $args[0];
 		$this->select($key, TRUE);
-		$this->source = max($this->source);
-		return $this->source;
+		if(isset($args[1]) && $args[1])
+		{
+			$this->source = $source[array_keys($this->source, max($this->source))[0]];			
+			return $this;
+		}
+		else
+		{
+			$this->source = min($this->source);			
+			return $this->source;
+		}
 	}
 
 	/* Select the min value using the key */
@@ -520,9 +528,18 @@ class Arrayz
 		$args = func_get_args();		
 		$op = [];
 		$key = $args[0];
+		$source = $this->source;	
 		$this->select($key, TRUE);
-		$this->source = min($this->source);
-		return $this->source;
+		if(isset($args[1]) && $args[1])
+		{
+			$this->source = $source[array_keys($this->source, min($this->source))[0]];			
+			return $this;
+		}
+		else
+		{
+			$this->source = min($this->source);
+			return $this->source;
+		}
 	}	
 
 	/* Calculate avg value by key */
