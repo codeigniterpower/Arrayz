@@ -7,9 +7,7 @@
 class Arrayz
 {
 	private $source;
-
 	private $operator;
-
 	public function __construct($array=[])
 	{
 		$this->source = [];
@@ -35,15 +33,16 @@ class Arrayz
 	{	
 		$args = func_get_args();
 		$search = $args[0];
+		$this->intersected = [];
 		if($search !='')
 		{			
 			array_walk_recursive($this->source, function(&$value, &$key) use(&$search){				
-				if( preg_match('/^'.$search.'/', $key) )
+				if( preg_match('/'.$search.'/', $key) )
 				{
 					$this->intersected[][$key] = $value;
 				}
 			});	
-			$this->source = $this->intersected;			
+			$this->source = $this->intersected;
 		}
 		return $this;
 	}
@@ -83,7 +82,7 @@ class Arrayz
 			$preserve = isset($args[1]) && $args[1] ? TRUE : FALSE;
 			//Format conditions
 			array_walk($cond, function($v, $k) use(&$resp, &$o) {
-				$key = explode(' ',$k);
+				$key = array_map('trim', explode(" ", $k));
 				$key[1] = (isset($key[1]) && $key[1] != "") ? $key[1] : '='; //Default is =
 				$key[2] = $v;
 				$o[] = $key;
@@ -110,7 +109,6 @@ class Arrayz
 		$op = [];
 		$search_key = $args[0];
 		$search_value = $args[1];
-
 		$op = array_filter($this->source, function($src) use ($search_key, $search_value) {
 			return (isset($src[$search_key])) && in_array( $src[$search_key], $search_value);
 		},ARRAY_FILTER_USE_BOTH);
@@ -207,10 +205,7 @@ class Arrayz
 		$i = 0;
 		if( $limit <= 1)
 		{
-			if(isset($this->source[$offset]))
-			{
-				$op = $this->source[$offset];				
-			}
+			$op = isset($this->source[$offset]) ? $this->source[$offset] : $op;
 		}
 		else
 		{
@@ -303,7 +298,7 @@ class Arrayz
 
 	/* Return output as Array */
 	public function get()
-	{
+	{		
 		return (empty($this->source)) ? NULL : $this->source;
 	}
 	
@@ -316,8 +311,7 @@ class Arrayz
 	/* Return output as Single Row Array */
 	public function get_row()
 	{		
-		reset($this->source);//Reset iteration
-		return (empty($this->source)) ? NULL : current($this->source);
+		return (is_array($this->source) && !(empty($this->source))) ? array_values($this->source)[0] : NULL;		 
 	}
 	/* Return array keys */
 	public function keys()
@@ -342,7 +336,6 @@ class Arrayz
 		$op = [];
 		$search_key = $args[0];
 		$search_value = $args[1];
-
 		$op = array_filter($this->source, function($src) use ($search_key, $search_value) {
 			return (isset($src[$search_key])) && !in_array( $src[$search_key], $search_value);
 		},ARRAY_FILTER_USE_BOTH);
@@ -396,14 +389,7 @@ class Arrayz
 
 	private function _preserve_keys($op=[], $preserve=TRUE)
 	{
-		if($preserve==TRUE)
-		{
-		  $this->source = $op;
-		}
-		else
-		{
-			$this->source = array_values($op);				
-		}
+		$this->source = ($preserve==TRUE) ? $op : array_values($op);
 	}
 
 	/*
@@ -415,10 +401,8 @@ class Arrayz
 		$op = [];
 		$sort_order = ['asc' => SORT_ASC, 'desc' => SORT_DESC];
 		$this->to_order = $this->source;
-		$args[1] = isset($args[1]) ? $args[1] : 'asc'; 
-		//Select the key
-		$sort_by = $this->select($args[0], TRUE);
-		//Sort
+		$args[1] = isset($args[1]) ? $args[1] : 'asc';
+		$sort_by = $this->select($args[0], TRUE); //Select the key to Sort		
 		array_multisort($sort_by->source, $sort_order[strtolower($args[1])], $this->to_order);
 		$this->source =$this->to_order;
 		return $this;
@@ -434,23 +418,15 @@ class Arrayz
 		$this->op = [];
 		if(is_string($search_key))
 		{
-			$search_string = $args[1];
-			array_walk($this->source, function(&$value, &$key) use(&$search_key, &$search_string){
-				$this->matcher($search_string, $value[$search_key], $value);
-			});			
+			$search_value = $args[1];
+			$op = array_filter($this->source, function($src) use ($search_key, $search_value){
+					return isset($src[$search_key]) && preg_match('/'.$search_value.'/', $src[$search_key]);
+			},ARRAY_FILTER_USE_BOTH);
+			$this->source = $op;
 		}
-		$this->source = $this->op;
-		$this->op = [];
+		$preserve = isset($args[3]) && $args[3] ? TRUE : FALSE;
+		$this->_preserve_keys($op, $preserve);
 		return $this;
-	}
-
-	/* Match key value by regex */
-	private function matcher($search_string, $search_value, $value)
-	{
-		if( preg_match('/'.$search_string.'/', $search_value) )
-		{
-			$this->op[] = $value;
-		}
 	}
 
 	/* Select a key and sum its values. @param1: single key of array to sum */
@@ -461,7 +437,7 @@ class Arrayz
 		$key = $args[0];
 		$this->select($key, TRUE);		
 		$this->source = array_sum($this->source);
-		return $this->source;
+		return $this;
 	}
 
 	/* Select the maximum value using the key */
@@ -470,17 +446,11 @@ class Arrayz
 		$args = func_get_args();		
 		$op = [];
 		$key = $args[0];
+		$source = $this->source;
 		$this->select($key, TRUE);
-		if(isset($args[1]) && $args[1])
-		{
-			$this->source = $source[array_keys($this->source, max($this->source))[0]];			
-			return $this;
-		}
-		else
-		{
-			$this->source = min($this->source);			
-			return $this->source;
-		}
+		$k = (isset($args[1]) && $args[1]) ? array_keys($this->source, max($this->source))[0] : '';
+		$this->source = (isset($args[1]) && $args[1]) ? [$k => $source[$k]] : max($this->source);
+		return $this;
 	}
 
 	/* Select the min value using the key */
@@ -491,27 +461,20 @@ class Arrayz
 		$key = $args[0];
 		$source = $this->source;	
 		$this->select($key, TRUE);
-		if(isset($args[1]) && $args[1])
-		{
-			$this->source = $source[array_keys($this->source, min($this->source))[0]];			
-			return $this;
-		}
-		else
-		{
-			$this->source = min($this->source);
-			return $this->source;
-		}
+		$k = (isset($args[1]) && $args[1]) ? array_keys($this->source, min($this->source))[0] : '';
+		$this->source = (isset($args[1]) && $args[1]) ? [$k => $source[$k]] : min($this->source);
+		return $this;		
 	}	
 
-	/* Calculate avg value by key */
+	/* Calculate avg value by key. @param2 is round off numeric */
 	public function select_avg()
 	{
 		$args = func_get_args();		
 		$op = [];
-		$key = $args[0];
+		$key = $args[0];		
 		$this->select($key, TRUE);
-		$this->source = (array_sum($this->source)/count($this->source));
-		return $this->source;
+		$this->source = (isset($args[1]) && is_numeric($args[1])) ? round((array_sum($this->source)/count($this->source)), $args[1]) : (array_sum($this->source)/count($this->source));
+		return $this;
 	}
 
 	/* Select Distinct values*/
@@ -526,7 +489,7 @@ class Arrayz
 		array_walk($this->source, function(&$value, &$key) use(&$op, &$source){
 			$op[] = $source[$value];
 		});	
-		$this->source = $op;		
+		$this->source = $op;	
 		return $this;
 	}
 }
