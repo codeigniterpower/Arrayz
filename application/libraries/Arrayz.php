@@ -336,10 +336,16 @@ class Arrayz
 	    return $temp_data;
 	}
 
-	/* Return output */
+	/* Return output as Array */
 	public function get()
 	{
 		return (empty($this->source)) ? NULL : $this->source;
+	}
+	
+	/* Return output as JSON */
+	public function toJson()
+	{
+		return (empty($this->source)) ? NULL : json_encode($this->source);
 	}
 
 	/* Return array keys */
