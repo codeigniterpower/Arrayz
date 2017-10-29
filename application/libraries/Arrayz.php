@@ -89,6 +89,11 @@ class Arrayz
 				$key[2] = $v;
 				$o[] = $key;
 			});
+			if(count($o) == 1 ) //If only one condition, consider recall the where to use filter for more faster approach
+			{
+				list($search_key, $operator, $search_value) = $o[0];
+				$this->where($search_key, $operator, $search_value, $preserve);
+			}			
 			$resp = 0;
 			array_walk($this->source, function(&$value, &$key) use(&$op, &$o, &$preserve, &$resp){
 				$resp = 0;
