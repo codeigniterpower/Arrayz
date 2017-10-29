@@ -4,7 +4,6 @@
 * Developer - Giri Annamalai M
 * Version - 1.0
 */
-
 class Arrayz
 {
 	private $source;
@@ -72,7 +71,7 @@ class Arrayz
 			}
 			$preserve = isset($args[3]) && $args[3] ? TRUE : FALSE;
 			$op = array_filter($this->source, function($src) use ($search_key, $search_value, $operator){
-				return $this->_operator_check($src[$search_key], $operator, $search_value);			
+				return isset($src[$search_key]) && $this->_operator_check($src[$search_key], $operator, $search_value);			
 			},ARRAY_FILTER_USE_BOTH);
 			$this->_preserve_keys($op, $preserve);
 		}
@@ -90,9 +89,9 @@ class Arrayz
 				$o[] = $key;
 			});
 			$op = array_filter($this->source, function($src) use ($o){
-				$resp = TRUE;
+				$resp = FALSE;
 				foreach ($o as $k => $v) {
-					$resp = !($this->_operator_check($src[$v[0]], $v[1], $v[2])) ? FALSE : $resp;	
+					$resp = (isset($src[$v[0]])) ? ($this->_operator_check($src[$v[0]], $v[1], $v[2])) : $resp;
 					if($resp==FALSE)  break; //If one condition fails break it. It's not the one, we are searching
 				}
 				return $resp;
@@ -112,8 +111,8 @@ class Arrayz
 		$search_key = $args[0];
 		$search_value = $args[1];
 
-		$op = array_filter($this->source, function($src) use ($search_key, $search_value) {							 
-			return in_array( $src[$search_key], $search_value);
+		$op = array_filter($this->source, function($src) use ($search_key, $search_value) {
+			return (isset($src[$search_key])) && in_array( $src[$search_key], $search_value);
 		},ARRAY_FILTER_USE_BOTH);
 		$preserve = isset($args[2]) && $args[2] ? TRUE : FALSE;
 		$this->_preserve_keys($op, $preserve);//Preserve keys or not		
@@ -126,29 +125,21 @@ class Arrayz
 	public function contains()
 	{
 		$args = func_get_args();
-
 		$isValid = false;
-
 		if ( func_num_args() == 2 ) 
 		{			    
 			$search_key = $args[0];
-
 			$search_value = $args[1];
 		}
-		else			
+		else
 		{
 			$search_key = '';
-
 		    $search_value = $args[1];			
 		}
-
 		//If search value founds, to stop the iteration using try catch method for faster approach
-
 		try {
 			  array_walk_recursive($this->source, function(&$value, &$key) use(&$search_key, &$search_value){
-
 		    	if($search_value != ''){
-
 		    		if($search_value == $value && $key == $search_key){
 		    			$isThere = true;	
 		    		}
@@ -163,13 +154,11 @@ class Arrayz
 		        if ($isThere) {
 		            throw new Exception;
 		        } 
-
 		    });
 		   }
 		   catch(Exception $exception) {
 			  $isValid = true;
 		   }
-
 		return $this->source = $isValid;
 	}	
 
@@ -181,15 +170,10 @@ class Arrayz
 	public function collapse()
 	{
 		$args = func_get_args();
-
 		$empty_remove = !empty ($args[0]) ? $args[0] : false ;
-
-		$op = [];
-			
+		$op = [];			
 		array_walk_recursive($this->source, function(&$value, &$key) use(&$op, &$empty_remove){
-
 			if( $empty_remove ){
-
 				if( $value != '' || $value != NULL )
 				{
 					$op[][$key] = $value;					
@@ -257,7 +241,7 @@ class Arrayz
 		{
 			array_walk($this->source, function(&$value, &$key) use(&$select, &$op){
 				$op[] = array_values(array_intersect_key($value, array_flip($select)))[0];
-			});			
+			});
 		}
 		else
 		{
@@ -317,25 +301,6 @@ class Arrayz
 		}
 	}
 
-	private function _recursive($array, $whr){
-
-	    global $temp_data;
-
-	    if(!empty($array)){
-
-	    foreach($array as $key => $value){
-	    //If $value is an array.
-	        if(is_array($value)){
-	            //We need to loop through it.
-	            return $this->_recursive($value, $whr);
-	        } else{                  
-	               $temp_data[]= $key.'_'.$value;
-	            }
-	        }
-	    }
-	    return $temp_data;
-	}
-
 	/* Return output as Array */
 	public function get()
 	{
@@ -348,6 +313,12 @@ class Arrayz
 		return (empty($this->source)) ? NULL : json_encode($this->source);
 	}
 
+	/* Return output as Single Row Array */
+	public function get_row()
+	{		
+		reset($this->source);//Reset iteration
+		return (empty($this->source)) ? NULL : current($this->source);
+	}
 	/* Return array keys */
 	public function keys()
 	{		
@@ -372,8 +343,8 @@ class Arrayz
 		$search_key = $args[0];
 		$search_value = $args[1];
 
-		$op = array_filter($this->source, function($src) use ($search_key, $search_value) {							 
-			return !in_array( $src[$search_key], $search_value);
+		$op = array_filter($this->source, function($src) use ($search_key, $search_value) {
+			return (isset($src[$search_key])) && !in_array( $src[$search_key], $search_value);
 		},ARRAY_FILTER_USE_BOTH);
 		$preserve = isset($args[2]) && $args[2] ? TRUE : FALSE;
 		$this->_preserve_keys($op, $preserve);//Preserve keys or not		
@@ -386,25 +357,19 @@ class Arrayz
 	public function has()
 	{
 		$args = func_get_args();
-
 		$array = $args[0];
-
 		$search_key = $args[1];
-
 		$isValid = false;
 		//If search value founds, to stop the iteration using try catch method for faster approach
 		try {
 			  array_walk_recursive($array, function(&$value, &$key) use(&$search_key){
-
 	    		if($search_key == $key){
 	    			$isThere = true;	
-	    		}
-		    	
+	    		}		    	
 		    	// If Value Exists
 		        if ($isThere) {
 		            throw new Exception;
 		        } 
-
 		    });
 		   }
 		   catch(Exception $exception) {
