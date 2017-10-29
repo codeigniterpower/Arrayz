@@ -23,7 +23,10 @@ $arrayz = new Arrayz;
 
 $arrayz($array)->where('id','1')->get();
 
-3. get() is required output the reponse from the library, only if the reponse is array.
+3. **get() is required when the output from the chain is array.**
+   otherwise no need to call get(). 
+   
+   Ex: $arrayz($array)->select_sum('id'); Here get() is not required, because the return value is digit.
 
 Example Array:
 --------------
