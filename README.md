@@ -1,7 +1,7 @@
 # Arrayz
 Array manipulation library for Codeigniter 3.x and Non-Framework PHP
 
-Arrayz Library Functions:
+Usage Instructions:
 ------------------------
 Created for two dimensional associative array / result array from codeigniter.
 
@@ -15,7 +15,7 @@ $arrayz = $this->arrayz;
 
 $arrayz($array)->where('id','1')->get();
 
-For Non-Framework PHP's, include the file. create instance, by following,
+For Non-Framework PHPs, include the file. create instance, by following,
 
 $arrayz = new Arrayz;
 
@@ -23,10 +23,7 @@ $arrayz = new Arrayz;
 
 $arrayz($array)->where('id','1')->get();
 
-3. **get() is required when the output from the chain is array.**
-   otherwise no need to call get(). 
-   
-   Ex: $arrayz($array)->select_sum('id'); Here get() is not required, because the return value is digit.
+3. **get() is required to return the output array/value.**   
 
 Example Array:
 --------------
@@ -58,16 +55,19 @@ select:
       $arrayz($array)->select('id,name')->get(); 
       
       //Select the key found returns  id, name
-      
-      $arrayz($array)->select('id', TRUE)->get(); 
 
-      //Select the key found returns  as flat array, if param2 is TRUE.
-     
-     $arrayz($array)->select('id,name')->where('state', 'CA')->get();
-     
+      //When using select with where, passed select key must be in where condition or else will skip the array. 
+
+      //To prevent this, you can chain as like following,
+
+      **$arrayz($array)->where('state')->select('Name,SSN')->get();**
+
+      //Filtered with where and return the selected keys
+          
      $arrayz($array)->select('id,name')->where('state', 'CA')->group_by('state')->get();
      
      //Select the ID and name and check that stats is equal to CA. we can chain almost all methods by this.
+
 
 Pluck:
 ------    
@@ -122,6 +122,7 @@ group_by:
       $arrayz($array)->group_by('id')->get(); 
 
       // Will return the array group by by fmo id
+      //using get_row() with group_by will return the array with 0 index.
       
 order_by: 
 ---------
@@ -150,18 +151,18 @@ like:
 select_min:
 ----------
       
-      $arrayz($array)->select_min('id'); 
+      $arrayz($array)->select_min('id')->get(); 
 
       //Will return minimum id value      
       
       $arrayz($array)->select_min('id', TRUE)->get(); 
 
-      //Will return minimum id value's array     
+      //Will return minimum id value's array
       
 select_max:
 ----------
       
-      $arrayz($array)->select_max('id'); 
+      $arrayz($array)->select_max('id')->get(); 
 
       //Will return maximum id value      
       
@@ -172,14 +173,18 @@ select_max:
 select_avg:
 ----------
       
-      $arrayz($array)->select_avg('id'); 
+      $arrayz($array)->select_avg('id')->get(); 
 
       //Will return calculate the average of the id as value      
+
+      $arrayz($array)->select_avg('id', 2)->get(); 
+
+      //Will return calculate average of the id and round off it to 2
 
 select_sum:
 ----------
       
-      $arrayz($array)->select_sum('id'); 
+      $arrayz($array)->select_sum('id')->get(); 
 
       //Will sum the id value 
       
@@ -189,6 +194,21 @@ distinct:
       $arrayz($array)->distinct('id')->get(); 
 
       //remove duplicate id array and return distinct
+
+get_row:
+----------
+      
+      $arrayz($array)->where('id','<', '2')->get_row(); 
+
+      //Return the single array, similar to limit(1)
+
+toJson:
+----------
+      
+      $arrayz($array)->where('id','<', '2')->toJson(); 
+
+      //Return the output as json_encode
+      
       
 contains:
 --------- 
@@ -211,13 +231,6 @@ has:
       $arrayz($array)->has('id')->get(); 
 
       //When the key found returns true
-
-
-Sum:
-----
-      $arrayz($array)->sum('id'); 
-
-      //Sum the value of id in given array
 
 Keys:
 ----
