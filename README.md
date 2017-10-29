@@ -60,7 +60,7 @@ select:
 
       //To prevent this, you can chain as like following,
 
-      **$arrayz($array)->where('state')->select('Name,SSN')->get();**
+      $arrayz($array)->where('state')->select('Name,SSN')->get();
 
       //Filtered with where and return the selected keys
           
