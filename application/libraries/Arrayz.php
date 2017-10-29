@@ -89,11 +89,11 @@ class Arrayz
 				$key[2] = $v;
 				$o[] = $key;
 			});
-			$resp = TRUE;
-			$op = array_filter($this->source, function($src) use ($o, $resp){
+			$op = array_filter($this->source, function($src) use ($o){
+				$resp = TRUE;
 				foreach ($o as $k => $v) {
 					$resp = !($this->_operator_check($src[$v[0]], $v[1], $v[2])) ? FALSE : $resp;	
-					if($resp==FALSE)  break;
+					if($resp==FALSE)  break; //If one condition fails break it. It's not the one, we are searching
 				}
 				return $resp;
 			},ARRAY_FILTER_USE_BOTH);
