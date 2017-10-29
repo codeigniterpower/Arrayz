@@ -89,28 +89,18 @@ class Arrayz
 				$key[2] = $v;
 				$o[] = $key;
 			});
-			if(count($o) == 1 ) //If only one condition, consider recall the where to use filter for more faster approach
-			{
-				list($search_key, $operator, $search_value) = $o[0];
-				$this->where($search_key, $operator, $search_value, $preserve);
-			}			
-			$resp = 0;
-			array_walk($this->source, function(&$value, &$key) use(&$op, &$o, &$preserve, &$resp){
-				$resp = 0;
+			$resp = TRUE;
+			$op = array_filter($this->source, function($src) use ($o, $resp){
 				foreach ($o as $k => $v) {
-					$resp = !($this->_operator_check($value[$v[0]], $v[1], $v[2])) ? 1 : $resp;	
-					if($resp==1)  break;
+					$resp = !($this->_operator_check($src[$v[0]], $v[1], $v[2])) ? FALSE : $resp;	
+					if($resp==FALSE)  break;
 				}
-				if($resp==0) //All conditions are true
-				{
-					($preserve==TRUE) ? ($op[$key] = $value ) : ($op[] = $value); 
-				}				
-			});			
-			$this->source = $op;
+				return $resp;
+			},ARRAY_FILTER_USE_BOTH);
+			$this->_preserve_keys($op, $preserve);
 		}
 		return $this;
 	}
-
 
 	/*
 	* Like SQL WhereIN . Supports operators.
