@@ -339,7 +339,7 @@ class Arrayz
 	/* Return output */
 	public function get()
 	{
-		return $this->source;
+		return (empty($this->source)) ? NULL : $this->source;
 	}
 
 	/* Return array keys */
