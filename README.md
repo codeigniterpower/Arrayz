@@ -7,19 +7,19 @@ Created for two dimensional associative array / result array from codeigniter.
 
 1. Load library and create instance: 
 
-$this->load->library('Arrayz');
+**$this->load->library('Arrayz');**
 
 For CI,
 
-$arrayz = $this->arrayz;
+**$arrayz = $this->arrayz;**
 
 For Non-Framework PHPs, include the file. create instance, by following,
 
-$arrayz = new Arrayz;
+**$arrayz = new Arrayz;**
 
 2. After instance created,You can use as following,
 
-$arrayz($array)->where('id','1')->get();
+**$arrayz($array)->where('id','1')->get();**
 
 3. **get() is required to return the output array/value.**   
 
