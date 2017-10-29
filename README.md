@@ -13,8 +13,6 @@ For CI,
 
 $arrayz = $this->arrayz;
 
-$arrayz($array)->where('id','1')->get();
-
 For Non-Framework PHPs, include the file. create instance, by following,
 
 $arrayz = new Arrayz;
