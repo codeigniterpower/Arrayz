@@ -1,6 +1,6 @@
 <?php
 /**
-* Array Manipulations - Inspired from Laravel Collection
+* Array Manipulations
 * Developer - Giri Annamalai M
 * Version - 1.0
 */
