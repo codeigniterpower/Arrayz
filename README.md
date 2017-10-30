@@ -47,6 +47,13 @@ $array = array (
   ),
 );
 
+select_where:
+------------
+	
+      $arrayz($array)->select_where('id,name', ['id'=> '1'])->get(); 
+      
+      //Select the key found returns  id, name  and check the condition as id is equal to 1.
+     
 select:
 -------
 	
