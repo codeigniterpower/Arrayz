@@ -53,6 +53,10 @@ select_where:
       $arrayz($array)->select_where('id,name', ['id'=> '1'])->get(); 
       
       //Select the key found returns  id, name  and check the condition as id is equal to 1.
+      
+      $arrayz($array)->select_where('name,state', ['id >' => '1'], TRUE)->order_by('state', 'ASC')->get();
+      
+      //Preserve the key, select and filter it. Order by the array state
      
 select:
 -------
