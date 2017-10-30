@@ -46,7 +46,36 @@ class Arrayz
 		}
 		return $this;
 	}
-
+	/*
+	* To increase performance select+where are combined to work along.
+	*/
+	public function select_where()
+	{
+		$args = func_get_args();
+		$select = array_map('trim', explode(",", $args[0]));
+		$op = $o = [];	
+		$cond = $args[1];//Format conditions		
+		array_walk($cond, function($v, $k) use(&$o) {
+			$key = array_map('trim', explode(" ", $k));
+			$key[1] = (isset($key[1]) && $key[1] != "") ? $key[1] : '==';
+			$key[2] = $v;
+			$o[] = $key;
+		});
+		 //Filter and select it
+		array_filter($this->source, function($src, $key) use ($o, $select, &$op){
+			$resp = FALSE;
+			foreach ($o as $k => $v) {
+				$resp = (isset($src[$v[0]])) ? ($this->_operator_check($src[$v[0]], $v[1], $v[2])) : $resp;
+				if($resp==FALSE)  break; //If one condition fails break it. It's not the one, we are searching
+			}
+			($resp==TRUE) ? ($op[$key] = array_intersect_key($src, array_flip($select))) : FALSE;
+			return $resp;
+		},ARRAY_FILTER_USE_BOTH);		
+		$preserve = isset($args[2]) && $args[2] ? TRUE : FALSE;
+		$this->_preserve_keys($op, $preserve);
+		return $this;
+	}
+	
 	/*
 	* Like SQL Where . Supports operators. @param3 return actual key of element
 	*/
