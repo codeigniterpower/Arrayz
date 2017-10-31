@@ -422,29 +422,52 @@ class Arrayz
 	}
 
 	/*
-	* Orderby by Key
+	* Orderby by flat/normal array
 	*/
 	public function order_by()
 	{
 		$args = func_get_args();
 		$op = [];
-		$sort_order = ['asc' => SORT_ASC, 'desc' => SORT_DESC];
 		$this->to_order = $this->source;
-		if(func_num_args()==1 && (strtolower($args[0]) =='asc' || strtolower($args[0]) =='desc') )
+		$sort_mode = ['asc', 'desc'];
+		//func_num_args()==1 ||  func_num_args()==2 && (in_array(strtolower($args[0]), $sort_mode))		
+		if(isset($this->source[0]) && is_array($this->source[0])) //Associatove Array
 		{	
-			$sort_by = $this;
-			$args[1] = $args[0];
+			$sort_order = ['asc' => SORT_ASC, 'desc' => SORT_DESC];
+			$sort_by = $this->select($args[0], TRUE); //Select the key to Sort
+			$args[1] = isset($args[1]) ? $args[1] : 'asc';
+			array_multisort($sort_by->source, $sort_order[strtolower($args[1])], $this->to_order);		
+			$this->source = $this->to_order;
 		}
 		else
 		{
-			$sort_by = $this->select($args[0], TRUE); //Select the key to Sort
-			$args[1] = isset($args[1]) ? $args[1] : 'asc';
+			$args_sort = strtolower($args[0]);			
+			$sort_order = ['asc' => 'asort', 'desc' => 'arsort'];
+			$sort_order[$args_sort]($this->source);
+			$preserve = isset($args[1]) && $args[1] ? TRUE : FALSE;
+			$this->_preserve_keys($this->source, $preserve);
 		}
-		array_multisort($sort_by->source, $sort_order[strtolower($args[1])], $this->to_order);		
-		$this->source = $this->to_order;
 		return $this;
 	}
-
+	/*
+	* Flat Where
+	*/
+	public function flat_where()
+	{
+		$args = func_get_args();
+		$op = [];
+		if(is_string($args[0])) //Single where condition
+		{
+			$cond = array_map('trim', explode(" ", $args[0]));
+			$op = array_filter($this->source, function($src) use ($cond) {								
+				return $this->_operator_check($src, $cond[0], $cond[1]);
+			});			
+			$preserve = isset($args[1]) && $args[1] ? TRUE : FALSE;
+			$this->_preserve_keys($op, $preserve);
+		}
+		return $this;		
+	}
+	
 	/*
 	* Similar to Like query in SQL
 	*/
