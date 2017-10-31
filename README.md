@@ -104,6 +104,12 @@ Where:
 
       //Multiple conditions. Similar to CI query builder where.
 
+flat_Where:
+------
+      $arrayz($array)->flat_where('id < 12', TRUE)->get();       
+      //Sort the flat array, and TRUE/FALSE for preserve the keys
+      
+
 WhereIn: 
 ------
       $arrayz($array)->whereIn( 'id', ['1','3'] )->get(); 
@@ -140,6 +146,9 @@ order_by:
       $arrayz($array)->where( ['id >', '2 ])->order_by('name', 'asc')->get(); 
 
       // Will return the array based on where condition sort the array by the name
+      
+      $arrayz($array)->select('id', TRUE)->where( ['id >', '2 ])->order_by('asc')->get(); 
+      //Select will return the flat array of Id. and filtered by where and order by Asc
 
 limit:
 ------
