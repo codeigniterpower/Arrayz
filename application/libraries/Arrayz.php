@@ -430,10 +430,18 @@ class Arrayz
 		$op = [];
 		$sort_order = ['asc' => SORT_ASC, 'desc' => SORT_DESC];
 		$this->to_order = $this->source;
-		$args[1] = isset($args[1]) ? $args[1] : 'asc';
-		$sort_by = $this->select($args[0], TRUE); //Select the key to Sort		
-		array_multisort($sort_by->source, $sort_order[strtolower($args[1])], $this->to_order);
-		$this->source =$this->to_order;
+		if(func_num_args()==1 && (strtolower($args[0]) =='asc' || strtolower($args[0]) =='desc') )
+		{	
+			$sort_by = $this;
+			$args[1] = $args[0];
+		}
+		else
+		{
+			$sort_by = $this->select($args[0], TRUE); //Select the key to Sort
+			$args[1] = isset($args[1]) ? $args[1] : 'asc';
+		}
+		array_multisort($sort_by->source, $sort_order[strtolower($args[1])], $this->to_order);		
+		$this->source = $this->to_order;
 		return $this;
 	}
 
