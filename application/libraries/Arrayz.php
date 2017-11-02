@@ -263,9 +263,7 @@ class Arrayz
 		$select = array_map('trim', explode(",", $select));
 		if(isset($args[1]) && $args[1]==TRUE) //Flat array if only one return key/value exists
 		{
-			array_walk($this->source, function(&$value, &$key) use(&$select, &$op){
-				$op[] = array_values(array_intersect_key($value, array_flip($select)))[0];
-			});
+			$op = array_column($this->source, $select);
 		}
 		else
 		{
