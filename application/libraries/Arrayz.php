@@ -268,7 +268,7 @@ class Arrayz
 		else
 		{
 			array_walk($this->source, function(&$value, &$key) use(&$select, &$op){
-				$op[] = array_intersect_key($value, array_flip($select));				
+				$op[$key] = array_intersect_key($value, array_flip($select));				
 			});			
 		}
 		$this->source = $op;
