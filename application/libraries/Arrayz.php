@@ -263,7 +263,7 @@ class Arrayz
 		$select = array_map('trim', explode(",", $select));
 		if(isset($args[1]) && $args[1]==TRUE) //Flat array if only one return key/value exists
 		{
-			$op = array_column($this->source, $select);
+			$op = array_column($this->source, $select[0]);
 		}
 		else
 		{
@@ -274,6 +274,26 @@ class Arrayz
 		$this->source = $op;
 		return $this;
 	}
+	
+	/*
+	* Select the keys and return only them	
+	* @param1: 'id'. @param2: name to be the array
+	* return the array with id as value, name as key
+	*/
+	public function select_column()
+	{
+		$args = func_get_args();
+		$select = $args[0];
+		$key = isset($args[1]) ? $args[1] : '';
+		if($key!=''){
+			$this->source = array_column($this->source, $select, $key);
+		}
+		else
+		{
+			$this->source = array_column($this->source, $select);
+		}
+		return $this;
+	}	
 
 	/*
 	* Group by a key value 
