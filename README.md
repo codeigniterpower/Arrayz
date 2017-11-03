@@ -106,7 +106,7 @@ Where:
 
 flat_Where:
 ------
-      $arrayz($array)->flat_where('id < 12', TRUE)->get();       
+      $arrayz($array)->flat_where('< 12', TRUE)->get();       
       //Sort the flat array, and TRUE/FALSE for preserve the keys
       
 
