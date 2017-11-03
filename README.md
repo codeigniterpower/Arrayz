@@ -205,6 +205,19 @@ select_sum:
       $arrayz($array)->select_sum('id')->get(); 
 
       //Will sum the id value 
+
+assign_key:
+----------
+      
+      $arrayz($array)->assign_key('id')->get(); 
+      
+      //Will return array with key value as 'id' value for associative result array.
+      
+      $arrayz($array)->assign_key('id', TRUE)->get(); 
+      
+      //Will array with key value as 'id' value. id will be removed from the array.      
+
+      
       
 distinct:
 ----------
