@@ -317,10 +317,10 @@ class Arrayz
 			}
 			else
 			{
-				array_walk($this->source, function(&$value, &$key) use(&$select, &$op, &$to_key){
+				array_walk($this->source, function(&$value, &$key) use(&$op, &$to_key){
 					$op[$value[$to_key[0]]] = $value;
 				});				
-			}
+			}			
            		$this->source = $op;
 		}
 		return $this;
