@@ -308,19 +308,19 @@ class Arrayz
 			$to_key[] = $args[0];
 			if(isset($args[1]) && $args[1])
 			{
-				array_walk($this->source, function(&$value, &$key) use(&$select, &$op, &$to_key){
-					$op[$value[$to_key[0]]] = $value;
-				});				
-			}
-			else
-			{
 				$v = $this->source[0];
 				$keys = array_keys($v);
 				$select = array_diff($keys, $to_key);
 				array_walk($this->source, function(&$value, &$key) use(&$select, &$op, &$to_key){
 					$op[$value[$to_key[0]]] = array_intersect_key($value, array_flip($select));				
 				});				
-			}			
+			}
+			else
+			{
+				array_walk($this->source, function(&$value, &$key) use(&$select, &$op, &$to_key){
+					$op[$value[$to_key[0]]] = $value;
+				});				
+			}
            		$this->source = $op;
 		}
 		return $this;
