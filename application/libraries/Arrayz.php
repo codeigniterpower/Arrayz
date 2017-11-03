@@ -293,8 +293,39 @@ class Arrayz
 			$this->source = array_column($this->source, $select);
 		}
 		return $this;
-	}	
-
+	}
+	
+	/*
+	* Assign the key from the array value
+	* @param1: key, @param2: true, will return with the key value
+	*/
+	public function assign_key()
+	{
+		$args = func_get_args();
+		$op = [];
+		if(!empty($this->source[0]))
+		{
+			$to_key[] = $args[0];
+			if(isset($args[1]) && $args[1])
+			{
+				array_walk($this->source, function(&$value, &$key) use(&$select, &$op, &$to_key){
+					$op[$value[$to_key[0]]] = $value;
+				});				
+			}
+			else
+			{
+				$v = $this->source[0];
+				$keys = array_keys($v);
+				$select = array_diff($keys, $to_key);
+				array_walk($this->source, function(&$value, &$key) use(&$select, &$op, &$to_key){
+					$op[$value[$to_key[0]]] = array_intersect_key($value, array_flip($select));				
+				});				
+			}			
+           		$this->source = $op;
+		}
+		return $this;
+	}
+	
 	/*
 	* Group by a key value 
 	*/
