@@ -377,7 +377,16 @@ class Arrayz
 	/* Return output as Array */
 	public function get()
 	{		
-		return (empty($this->source)) ? NULL : $this->source;
+	 	 if(is_array($this->source) && count($this->source)==0)
+	 	 {
+	 	 	return NULL;
+	 	 }		
+
+	 	 if(!is_array($this->source) && $this->source=='')
+	 	 {
+	 	 	return NULL;
+	 	 }		
+		return $this->source;
 	}
 	
 	/* Return output as JSON */
@@ -388,9 +397,14 @@ class Arrayz
 
 	/* Return output as Single Row Array */
 	public function get_row()
-	{		
-		return (is_array($this->source) && !(empty($this->source))) ? array_values($this->source)[0] : NULL;		 
+	{				
+		if(is_array($this->source) && count($this->source)==0)
+		{
+			return NULL;
+		}
+		return array_values($this->source)[0];
 	}
+	
 	/* Return array keys */
 	public function keys()
 	{		
