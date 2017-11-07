@@ -1,6 +1,7 @@
 <?php
 /**
 * Array Manipulations
+* Contributor - Giri Annamalai M
 * Version - 1.1
 */
 class Arrayz
