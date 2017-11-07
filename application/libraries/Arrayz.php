@@ -1,8 +1,8 @@
 <?php
 /**
 * Array Manipulations
-* Developer - Giri Annamalai M
-* Version - 1.0
+* Contributors - Giri Annamalai M, Dinesh Kumar K
+* Version - 1.1
 */
 class Arrayz
 {
