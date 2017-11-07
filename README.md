@@ -160,6 +160,10 @@ limit:
 
       //Will return the 10 elements after the 5 the index (Offset)
 
+      $arrayz($array)->limit( 10, 5, TRUE)->get(); 
+
+      //Will return the 10 elements after the 5 the index (Offset) Also preserve the actual key. To preserve the actual key we need offset
+
 like:
 ------
       $arrayz($array)->like('SSN', '01')->get(); 
