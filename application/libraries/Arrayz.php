@@ -218,36 +218,21 @@ class Arrayz
 	/*
 	* Converting Two Dimensional Array with lImit offset 
 	*/
-
 	public function limit()
 	{
-		$this->source = array_values($this->source);
 		$args = func_get_args();
 		$limit = $args[0];
-		$offset = !empty ($args[1]) ? $args[1] : 0 ;
-		$op = [];
-		$cnt = count($this->source);
-		if($limit > $cnt )	
+		$offset = isset ($args[1]) ? $args[1] : 0 ;
+		if($offset>0)
 		{
-			$limit = $cnt;
+			$offset = $offset - 1;
 		}
-		$i = 0;
-		if( $limit <= 1)
+		$preserve = isset($args[2]) && $args[2] ? TRUE : FALSE;
+		$this->source = array_slice($this->source, $offset, $limit, $preserve);
+		if(count($this->source) == 1)
 		{
-			$op = isset($this->source[$offset]) ? $this->source[$offset] : $op;
+			$this->source = array_values($this->source)[0];
 		}
-		else
-		{
-			for($i=0; $i<$limit; $i++)
-			{
-				if(isset($this->source[$offset]))
-				{
-					$op[] = $this->source[$offset];
-					$offset++;
-				}
-			}
-		}
-		$this->source = $op;
 		return $this;
 	}
 
