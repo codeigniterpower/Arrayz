@@ -507,9 +507,11 @@ class Arrayz
 		if(is_string($args[0])) //Single where condition
 		{
 			$cond = array_map('trim', explode(" ", $args[0]));
-			$op = array_filter($this->source, function($src) use ($cond) {								
-				return $this->_operator_check($src, $cond[0], $cond[1]);
-			});			
+			array_walk($this->source, function(&$value, &$key) use(&$op, &$cond){
+				if($this->_operator_check($value, $cond[0], $cond[1])){
+					$op[$key] = $value;
+				}
+			});
 			$preserve = isset($args[1]) && $args[1] ? TRUE : FALSE;
 			$this->_preserve_keys($op, $preserve);
 		}
