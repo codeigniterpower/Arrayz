@@ -145,6 +145,39 @@ class Arrayz
 		$this->_preserve_keys($op, $preserve);//Preserve keys or not		
 		return $this;
 	}
+	/*
+	* Flat array with where in
+	*/
+	public function flat_whereIn()
+	{
+		$args = func_get_args();
+		$op = [];		
+		$search_value = $args[0];
+		$op = array_filter($this->source, function($src) use ($search_value) {
+			return in_array( $src, $search_value);
+		},ARRAY_FILTER_USE_BOTH);
+
+		$preserve = isset($args[1]) && $args[1] ? TRUE : FALSE;
+		$this->_preserve_keys($op, $preserve);//Preserve keys or not		
+		return $this;
+	}	
+
+	/*
+	* flat array with whereNotIn condition
+	*/
+	public function flat_whereNotIn()
+	{
+		$args = func_get_args();
+		$op = [];		
+		$search_value = $args[0];
+		$op = array_filter($this->source, function($src) use ($search_value) {
+			return !in_array( $src, $search_value);
+		},ARRAY_FILTER_USE_BOTH);
+
+		$preserve = isset($args[1]) && $args[1] ? TRUE : FALSE;
+		$this->_preserve_keys($op, $preserve);//Preserve keys or not		
+		return $this;
+	}
 
 	/*
 	* search and return true. 
