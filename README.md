@@ -103,14 +103,8 @@ Where:
       $arrayz($array)->where(['id >' => '3', 'name'=> 'Giri'])->get();
 
       //Multiple conditions. Similar to CI query builder where.
-
-flat_Where:
-------
-      $arrayz($array)->flat_where('< 12', TRUE)->get();       
-      //Sort the flat array, and TRUE/FALSE for preserve the keys
-      
-
-WhereIn: 
+    
+whereIn: 
 ------
       $arrayz($array)->whereIn( 'id', ['1','3'] )->get(); 
 
@@ -120,15 +114,35 @@ WhereIn:
 
       // Will return the array where matches id is 34 and 35 and preserve the actual key
 
-WhereNotIn: 
+flat_Where:
 ------
-      $arrayz($array)->whereNotIn('id', ['34','35'] )->get(); 
+      $arrayz($array)->flat_where('< 12', TRUE)->get();      
+      
+      **Flat repersent the single dimensional array. Ex. [1,2,3,4]**
+      
+      //It will check the all array values less than 12
+      
+      //Sort the flat array, and TRUE/FALSE for preserve the keys
+            
+flat_whereIn: 
+------
+      $arrayz($array)->flat_whereIn(['34','35'] )->get(); 
+
+      // Will return the array where not matches id is 34 and 35 - 
+
+      $arrayz($array)->whereIn(['34','35'], TRUE )->get(); 
+
+      // Will return the array where not matches id is 34 and 35
+      
+flat_whereNotIn
+------
+      $arrayz($array)->flat_whereNotIn(['34','35'] )->get(); 
 
       // Will return the array where not matches id is 34 and 35
 
-      $arrayz($array)->whereNotIn('id', ['34','35'], TRUE )->get(); 
+      $arrayz($array)->flat_whereNotIn(['34','35'], TRUE )->get(); 
 
-      // Will return the array where not matches id is 34 and 35
+      // Will return the array where not matches id is 34 and 35      
       
 group_by: 
 ---------
