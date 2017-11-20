@@ -69,9 +69,9 @@ class Arrayz
 				$resp = (isset($src[$v[0]])) ? ($this->_operator_check($src[$v[0]], $v[1], $v[2])) : $resp;
 				if($resp==FALSE)  break; //If one condition fails break it. It's not the one, we are searching
 			}
-			($resp==TRUE) ? ($op[$key] = array_intersect_key($src, $select)) : FALSE;
+			($resp==TRUE) ? ( (count($select) == '1' ? ($op[$key]  = array_intersect_key($src, $select)[key($select)] ) : $op[$key] = array_intersect_key($src, $select) ) ): FALSE;
 			return $resp;
-		},ARRAY_FILTER_USE_BOTH);		
+		},ARRAY_FILTER_USE_BOTH);
 		$preserve = isset($args[2]) && $args[2] ? TRUE : FALSE;
 		$this->_preserve_keys($op, $preserve);
 		return $this;
@@ -256,7 +256,7 @@ class Arrayz
 			$select = array_flip($select);
 			array_walk($this->source, function(&$value, &$key) use(&$select, &$op){
 				$op[$key] = array_intersect_key($value, $select);				
-			});			
+			});
 		}
 		$this->source = $op;
 		return $this;
@@ -298,8 +298,9 @@ class Arrayz
 				$v = $this->source[0];
 				$keys = array_keys($v);
 				$select = array_diff($keys, $to_key);
+				$select = array_flip($select);
 				array_walk($this->source, function(&$value, &$key) use(&$select, &$op, &$to_key){
-					$op[$value[$to_key[0]]] = array_intersect_key($value, array_flip($select));				
+					$op[$value[$to_key[0]]] = array_intersect_key($value, $select);				
 				});				
 			}
 			else
