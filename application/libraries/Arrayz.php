@@ -222,7 +222,7 @@ class Arrayz
 	{
 		$args = func_get_args();
 		$limit = $args[0];
-		$offset = isset ($args[1]) ? $args] : 0 ;
+		$offset = isset ($args[1]) ? $args[1] : 0 ;
 		if($offset>0)
 		{
 			$offset = $offset - 1;
