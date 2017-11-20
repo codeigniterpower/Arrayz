@@ -222,14 +222,14 @@ class Arrayz
 	{
 		$args = func_get_args();
 		$limit = $args[0];
-		$offset = isset ($args[1]) ? $args[1] : 0 ;
+		$offset = isset ($args[1]) ? $args] : 0 ;
 		if($offset>0)
 		{
 			$offset = $offset - 1;
 		}
 		$preserve = isset($args[2]) && $args[2] ? TRUE : FALSE;
 		$this->source = array_slice($this->source, $offset, $limit, $preserve);
-		if(count($this->source) == 1)
+		if($limit == 1)
 		{
 			$this->source = array_values($this->source)[0];
 		}
