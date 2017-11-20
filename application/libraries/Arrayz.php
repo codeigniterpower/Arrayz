@@ -62,13 +62,14 @@ class Arrayz
 			$o[] = $key;
 		});
 		 //Filter and select it
+		$select = array_flip($select);
 		array_filter($this->source, function($src, $key) use ($o, $select, &$op){
 			$resp = FALSE;
 			foreach ($o as $k => $v) {
 				$resp = (isset($src[$v[0]])) ? ($this->_operator_check($src[$v[0]], $v[1], $v[2])) : $resp;
 				if($resp==FALSE)  break; //If one condition fails break it. It's not the one, we are searching
 			}
-			($resp==TRUE) ? ($op[$key] = array_intersect_key($src, array_flip($select))) : FALSE;
+			($resp==TRUE) ? ($op[$key] = array_intersect_key($src, $select)) : FALSE;
 			return $resp;
 		},ARRAY_FILTER_USE_BOTH);		
 		$preserve = isset($args[2]) && $args[2] ? TRUE : FALSE;
@@ -142,39 +143,6 @@ class Arrayz
 			return (isset($src[$search_key])) && in_array( $src[$search_key], $search_value);
 		},ARRAY_FILTER_USE_BOTH);
 		$preserve = isset($args[2]) && $args[2] ? TRUE : FALSE;
-		$this->_preserve_keys($op, $preserve);//Preserve keys or not		
-		return $this;
-	}
-	/*
-	* Flat array with where in
-	*/
-	public function flat_whereIn()
-	{
-		$args = func_get_args();
-		$op = [];		
-		$search_value = $args[0];
-		$op = array_filter($this->source, function($src) use ($search_value) {
-			return in_array( $src, $search_value);
-		},ARRAY_FILTER_USE_BOTH);
-
-		$preserve = isset($args[1]) && $args[1] ? TRUE : FALSE;
-		$this->_preserve_keys($op, $preserve);//Preserve keys or not		
-		return $this;
-	}	
-
-	/*
-	* flat array with whereNotIn condition
-	*/
-	public function flat_whereNotIn()
-	{
-		$args = func_get_args();
-		$op = [];		
-		$search_value = $args[0];
-		$op = array_filter($this->source, function($src) use ($search_value) {
-			return !in_array( $src, $search_value);
-		},ARRAY_FILTER_USE_BOTH);
-
-		$preserve = isset($args[1]) && $args[1] ? TRUE : FALSE;
 		$this->_preserve_keys($op, $preserve);//Preserve keys or not		
 		return $this;
 	}
@@ -285,8 +253,9 @@ class Arrayz
 		}
 		else
 		{
+			$select = array_flip($select);
 			array_walk($this->source, function(&$value, &$key) use(&$select, &$op){
-				$op[$key] = array_intersect_key($value, array_flip($select));				
+				$op[$key] = array_intersect_key($value, $select);				
 			});			
 		}
 		$this->source = $op;
