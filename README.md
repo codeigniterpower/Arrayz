@@ -50,6 +50,11 @@ $array = array (
 select_where:
 ------------
 	
+      $arrayz($array)->select_where('id,name',['id >' => '90'], TRUE)->limit(2,0,TRUE)->get();		
+      
+      //Will return the id, name from selected array where id is less than 90, TRUE represents the 'Preserve Key'.
+      // And the limit is 2, offset from 0 and TRUE to preserve key.
+	
       $arrayz($array)->select_where('id,name', ['id'=> '1'])->get(); 
       
       //Select the key found returns  id, name  and check the condition as id is equal to 1.
@@ -122,27 +127,7 @@ flat_Where:
       
       //It will check the all array values less than 12
       
-      //Sort the flat array, and TRUE/FALSE for preserve the keys
-            
-flat_whereIn: 
-------
-      $arrayz($array)->flat_whereIn(['34','35'] )->get(); 
-
-      // Will return the array where not matches id is 34 and 35 - 
-
-      $arrayz($array)->whereIn(['34','35'], TRUE )->get(); 
-
-      // Will return the array where not matches id is 34 and 35
-      
-flat_whereNotIn
-------
-      $arrayz($array)->flat_whereNotIn(['34','35'] )->get(); 
-
-      // Will return the array where not matches id is 34 and 35
-
-      $arrayz($array)->flat_whereNotIn(['34','35'], TRUE )->get(); 
-
-      // Will return the array where not matches id is 34 and 35      
+      //Sort the flat array, and TRUE/FALSE for preserve the keys             
       
 group_by: 
 ---------
