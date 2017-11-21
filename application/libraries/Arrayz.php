@@ -2,7 +2,7 @@
 /**
 * Array Manipulations
 * Contributor - Giri Annamalai M
-* Version - 1.1
+* Version - 1.2
 */
 class Arrayz
 {
@@ -227,9 +227,9 @@ class Arrayz
 		{
 			$offset = $offset - 1;
 		}
-		$preserve = isset($args[2])  ? $args[2] : TRUE;
-		$this->source = array_slice($this->source, $offset, $limit, $preserve);
-		if($limit == 1)
+		$preserve = isset($args[2])  ? $args[2] : TRUE;		
+		$this->source = array_slice($this->source, $offset, $limit, $preserve);		
+		if($limit == 1 && count($this->source) > 0)
 		{
 			$this->source = array_values($this->source)[0];
 		}
@@ -613,4 +613,4 @@ class Arrayz
 		return $this;
 	}	
 }
-/* End of the file arrayz.php */
+/* End of the file Arrayz.php */
