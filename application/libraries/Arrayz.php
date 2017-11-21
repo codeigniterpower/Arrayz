@@ -602,13 +602,13 @@ class Arrayz
 		$this->source = $op;	
 		return $this;
 	}
-		/*
+	/*
 	* reverse the array
 	*/
 	public function reverse()
 	{	
 		$args = func_get_args();
-		$preserve = isset($args[0]) && $args[0] ? TRUE : FALSE;		
+		$preserve = isset($args[0]) ? $args[0] : TRUE;
 		$this->source = array_reverse($this->source, $preserve);
 		return $this;
 	}	
