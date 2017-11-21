@@ -72,7 +72,7 @@ class Arrayz
 			($resp==TRUE) ? ( (count($select) == '1' ? ( isset(array_intersect_key($src, $select)[key($select)]) ?  $op[$key]  = array_intersect_key($src, $select)[key($select)]: FALSE ) : $op[$key] = array_intersect_key($src, $select) ) ): FALSE;
 			return $resp;
 		},ARRAY_FILTER_USE_BOTH);
-		$preserve = isset($args[2]) && $args[2] ? TRUE : FALSE;
+		$preserve = isset($args[2]) ? $args[2] : TRUE;
 		$this->_preserve_keys($op, $preserve);
 		return $this;
 	}
@@ -227,7 +227,7 @@ class Arrayz
 		{
 			$offset = $offset - 1;
 		}
-		$preserve = isset($args[2]) && $args[2] ? TRUE : FALSE;
+		$preserve = isset($args[2])  ? $args[2] : TRUE;
 		$this->source = array_slice($this->source, $offset, $limit, $preserve);
 		if($limit == 1)
 		{
