@@ -221,7 +221,7 @@ class Arrayz
 	public function limit()
 	{
 		$args = func_get_args();
-		$limit = ($args[0]!='1') ? $args[0]+1 : $args[0];
+		$limit = ($args[0]!=1) ? $args[0]+1 : $args[0];
 		$offset = isset ($args[1]) ? $args[1] : 0;		
 		$preserve = isset($args[2])  ? $args[2] : TRUE;		
 		$this->source = array_slice($this->source, $offset, $limit, $preserve);		
