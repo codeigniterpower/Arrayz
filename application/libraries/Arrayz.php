@@ -608,5 +608,35 @@ class Arrayz
 		$this->source = array_reverse($this->source, $preserve);
 		return $this;
 	}	
+
+	/*
+	* Combine two arrays of each columns create 
+	* @param1: first array, @param2: 2nd array
+	*/
+	public function join_each()
+	{
+		$args = func_get_args();
+		$op = [];
+		if(count($args)==1)
+		{
+			$i=0;
+			$join = array_values($args[0]);			
+			array_walk($this->source, function(&$value, &$key) use(&$join, &$op, &$i){
+				$op[$key] = isset($join[$i]) ? $value + $join[$i] : $value;
+			});			
+		}
+		else if (count($args) == 2)
+		{			
+			$arr1 = array_values($args[0]);			
+			$arr2 = array_values($args[1]);			
+			$i=0;
+			array_walk($this->source, function(&$value, &$key) use(&$op, &$i, &$arr1, &$arr2){
+				$op[$key] = (isset($arr1[$i]) && isset($arr2[$i])) ? ($value + $arr1[$i] + $arr2[$i]) : $value;
+				$i++;				
+			});			
+		}		
+		$this->source = $op;
+		return $this;
+	}
 }
 /* End of the file Arrayz.php */
