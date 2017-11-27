@@ -220,6 +220,18 @@ assign_key:
       
       //Will array with key value as 'id' value. id will be removed from the array.      
 
+join_each:
+----------
+      
+      $array2 = [ [ 'state' => 'CA'], ['state' => 'NY'] ];
+      
+      $arrayz($array)->join_each($array2)->get();
+      
+      Maximum two arrays can be combinable. It required as Join array have equal count of elements.
+      
+      $arrayz($array)->join_each($array2)->get();
+            
+      //It will join the each element of the array to appropriate $array      
       
       
 distinct:
