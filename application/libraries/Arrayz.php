@@ -223,10 +223,6 @@ class Arrayz
 		$args = func_get_args();
 		$limit = $args[0];
 		$offset = isset ($args[1]) ? $args[1] : 0 ;
-		if($offset>0)
-		{
-			$offset = $offset - 1;
-		}
 		$preserve = isset($args[2])  ? $args[2] : TRUE;		
 		$this->source = array_slice($this->source, $offset, $limit, $preserve);		
 		if($limit == 1 && count($this->source) > 0)
