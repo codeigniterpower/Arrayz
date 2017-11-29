@@ -127,7 +127,23 @@ flat_Where:
       
       //It will check the all array values less than 12
       
-      //Sort the flat array, and TRUE/FALSE for preserve the keys             
+      //Sort the flat array, and TRUE/FALSE for preserve the keys       
+      
+join:
+------
+      $arrayz($array)->join($array2, 'id=category_id', 'left')->get();      
+      
+      **Join $array with $array2 based on their common value
+      
+      $arrayz($array)->join($array2, 'id=category_id', 'inner')->get();      
+      
+      //Only matched ids only return
+      
+      $arrayz($array)->join($array2, 'id')->get();      
+      
+      //If both have same column, we can pass only one value(optional).
+      
+      //By default is 'left'
       
 group_by: 
 ---------
