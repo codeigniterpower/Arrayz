@@ -637,6 +637,41 @@ class Arrayz
 		}		
 		$this->source = $op;
 		return $this;
+	}	
+
+	/*
+	* Join two arrays of similar to SQL. Left and Inner Join Currently Supported
+	* @param1: first array, @param2: 2nd array
+	*/
+	public function join()
+	{
+		$args = func_get_args();
+		$op = [];
+		$join_array = $args[0];
+		$join_by = $args[1];
+		$join_type = isset($args[2]) ? strtolower($args[2]) : 'left';//Default is left
+		$join_by = (strpos($join_by, '=') !== FALSE) ? array_map('trim', explode("=", $join_by)) :  array_fill(0, 1, $args[1]); //Assign Joiners
+		$join_keys = array_fill_keys(array_keys($join_array[0]), NULl);//For left join
+		if(strtolower($join_by[0]) == strtolower($join_by[1]))
+		{
+			unset($join_keys[$join_by[1]]);			
+		}
+		$joiner_1 = array_flip(array_column($this->source, $join_by[0])); //Prepare 1		
+		$joiner_2 = array_flip(array_column($join_array, $join_by[1]));	//Prepare 2
+		array_walk($this->source, function(&$value, &$key) use(&$join_array, &$op, &$join_by, &$joiner_1,&$joiner_2, &$join_keys, &$join_type){			
+				if(isset($value[$join_by[0]]) ){ //Are you there?
+					$find = $value[$join_by[0]];
+					if(isset($joiner_2[$find])) { //Do you know me?
+						$op[$key] = $value + $join_array[$joiner_2[$find]]; //Yes
+					}
+					else if($join_type =='left') //Be with me even not you
+					{
+						$op[$key] = $value + $join_keys;
+					}
+				}
+		});
+		$this->source = $op;
+		return $this;
 	}
 }
 /* End of the file Arrayz.php */
