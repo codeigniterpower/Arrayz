@@ -1,4 +1,4 @@
-<?php
+<?php namespace CodeIgniter\Arrayz;
 /**
 * Array Manipulations
 * Contributor - Giri Annamalai M
@@ -13,7 +13,8 @@ class Arrayz
 		$this->source = [];
 		if($this->_chk_arr($array))
 		{
-			$this->source = $array;
+			$this->source = new SplFixedArray(sizeof($array));
+			// $this->source = $array;
 		}
 	}
 
@@ -59,17 +60,76 @@ class Arrayz
 			$preserve = $args[1] ?? FALSE;
 		}
 		$type_select = 'resolve_where'.count($this->conditions);
-		foreach($this->source as $k=>$v) {
+/*		foreach($this->source as $k=>$v) {
 			$this->{$type_select}($v, $k) ? $source[] = $v : '';
+		}*/
+		$search_key = $this->conditions[0][0]; 
+		$search_value = $this->conditions[0][1]; 
+		
+		switch ($this->conditions[0][1]) {
+		    default:
+		    case '=':
+		    case '==':   $fn = 'eq';
+		    case '!=':	
+		    case '<>':  $fn = 'neq';
+		    case '<':   $fn = 'lt';
+		    case '>':   $fn = 'gt';
+		    case '<=':  $fn = 'lteq';
+		    case '>=':  $fn = 'gteq';
+		    case '===': $fn = 'eq3';
+		    case '!==': $fn = 'neq3';
 		}
-		//$source = array_filter($this->source, array($this, $type_select), ARRAY_FILTER_USE_BOTH);
+		$eq = function($v, $k)
+		{
+			return $v > $k;
+		};		
+		$neq = function($v, $k)
+		{
+			return $v != $k;
+		};		
+		$lt = function($v, $k)
+		{
+			return $v < $k;
+		};
+		$gt = function($v, $k)
+		{
+			return $v > $k;
+		};
+		$lteq = function($v, $k)
+		{
+			return $v <= $k;
+		};
+		$gteq = function($v, $k)
+		{
+			return $v >= $k;
+		};
+
+		$eq3 = function($v, $k)
+		{
+			return $v === $k;
+		};
+
+		$neq3 = function($v, $k)
+		{
+			return $v !== $k;
+		};		
+		if(count($this->conditions)==1)
+		{			
+			foreach($this->source as $k=>$v)
+			{
+				$$fn($v[$search_key],$search_value) ? $source=$v : '';
+			}			
+		}
+
+		// $source = array_filter($this->source, array($this, $type_select), ARRAY_FILTER_USE_BOTH);
 		$this->_preserve_keys($source, $preserve);		
 		return $this;
 	}
 
 	public function resolve_where1($v, $k)
 	{	
-		return $this->_operator_check($v[$this->conditions[0][0]], $this->conditions[0][1], $this->conditions[0][2]);
+		return $v[$this->conditions[0][0]] > 100 && $v['cap_type']=='AR';
+		// return $this->_operator_check($v[$this->conditions[0][0]], $this->conditions[0][1], $this->conditions[0][2]);
 	}		
 
 	public function resolve_where2($v, $k)
