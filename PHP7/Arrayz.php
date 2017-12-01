@@ -13,9 +13,10 @@ class Arrayz
 	public function __construct($array=[])
 	{
 		$this->source = [];
-		$this->worker = [];
-		//$fixedArray = new SplFixedArray($size);
-		if($this->_chk_arr($array))
+		$this->worker = [];		
+		$this->select_fields = [];
+		$this->conditions = [];
+		if(is_array($array) && count($array) > 0 )
 		{
 			$this->source = $array;
 		}
@@ -30,14 +31,6 @@ class Arrayz
 		return $this;
 	}
 
-	private function _chk_arr($array)
-	{
-		if(is_array($array) && count($array) > 0 )
-		{
-			return true;
-		}
-	}
-
 	/*
 	* Select the keys and return only them	
 	* @param1: 'key1,key2', must be comma seperated.
@@ -45,7 +38,7 @@ class Arrayz
 	public function select()
 	{		
 		$args = func_get_args();
-		$this->select_fields = $this->format_select($args[0]);
+		$this->select_fields = $this->format_select($args[0]);		
 		$preserve = $args[1] ?? FALSE;
 		$this->worker['select'] = ['type' => 'select', 'args' => $args, 'priority' => '4', 'preserve' => $preserve];
 		return $this;
@@ -99,7 +92,7 @@ class Arrayz
 		$this->priorizer();
 		if(!empty($this->worker['where']))
 		{
-			$this->{$this->worker['where']['type']}();
+			$is_resolved = $this->resolve_where();
 		}
 	}
 
@@ -113,8 +106,26 @@ class Arrayz
 	{
 		if(!empty($this->worker['select']))
 		{	
-			$type_select = count($this->select_fields) == 1 ? 'resolve_single_select_where': 'resolve_select_where';		
-			array_walk($this->source, array($this, 'resolve_select_where'));
+			$type_select = count($this->select_fields)==1 && (count($this->conditions) == 1) ? 'r_single_select_single_where': '';
+			
+			$conditions = $this->conditions;
+			if(count($this->select_fields)==1 && (count($this->conditions) == 1))
+			{
+				foreach ($this->source as $key => $value) {						
+					if($this->_operator_check($value[$conditions[0][0]], $conditions[0][1], $conditions[0][2])){
+							$op[$key] = $value[$this->select_fields];
+					}
+					continue;
+				}				
+			}else if(count($this->select_fields)>1 && (count($this->conditions) == 1)){				
+				foreach ($this->source as $key => $value) {						
+					if($this->_operator_check($value[$conditions[0][0]], $conditions[0][1], $conditions[0][2])){
+							$op[$key] = array_intersect_key($value, $this->select_fields);
+					}
+					continue;
+				}
+			}
+			$this->source = $op;
 		}
 		else{
 			$type_select = count($this->conditions) == 1 ? 'resolve_filter': 'resolve_multi_filter';	
@@ -122,6 +133,29 @@ class Arrayz
 			$this->source = $source;
 		}
 	}
+	
+	public function r_single_select_single_where()
+	{
+		$op = [];
+		$conditions = $this->conditions;
+
+		foreach ($this->source as $key => $value) {						
+			if($this->_operator_check($value[$conditions[0][0]], $conditions[0][1], $conditions[0][2])){
+					$op[$key] = $value[$this->select_fields];				
+			}
+		}
+		$this->source = $op;	
+	}	
+
+	public function r_single_select_multi_where()
+	{
+		$op = new SplFixedArray(sizeof($this->source));
+		$conditions = $this->conditions;
+		array_walk($this->source, function($v, $k) use ($op, $conditions) {
+			$this->_operator_check($value[$conditions[0][0]], $conditions[0][1], $conditions[0][2]) ? $op[$key] = $value[$this->select_fields] : '';
+		});
+		$this->source = $op;	
+	}	
 
 	public function resolve_filter($v, $k): bool
 	{				
@@ -138,7 +172,7 @@ class Arrayz
 		return $resp;
 	}
 
-	public function resolve_single_select_where(&$v, &$k)
+/*	public function resolve_single_select_where(&$v, &$k)
 	{
 		isset($v[$this->select_fields]) ?  $v = $v[$this->select_fields] : '';
 	}	
@@ -146,7 +180,7 @@ class Arrayz
 	public function resolve_select_where(&$v, &$k)
 	{
 		$v = array_intersect_key($v, $this->select_fields);
-	}
+	}*/
 	// public function select_where($v, $k)
 
 	private function format_conditions($cond=''): array
@@ -182,10 +216,10 @@ class Arrayz
 		}
 	}
 
-	private function format_select(string $select=''): array
+	public function format_select(string $select='')
 	{		
-		$select = array_map('trim', explode(",", $select));
-		$this->select_fields = count($select) == 1 ? $select[0] : array_flip($select);
+		$select = array_map('trim', explode(",", $select));		
+		return (count($select) == 1 ) ? $select[0] : array_flip($select);		
 	}
 
 	/* Get which is prior */
