@@ -1,4 +1,4 @@
-<?php
+<?php 
 /**
 * Array Manipulations
 * Contributor - Giri Annamalai M
@@ -361,7 +361,12 @@ class Arrayz
 	}
 	
 	public function resolve_where_row()
-	{				
+	{	
+		if(!empty($this->functions['order_by']))
+		{
+			$this->resolve_order_by();
+			unset($this->function['order_by']);
+		}
 		$conditions = $this->conditions;		
 		$cond_cnt = $this->condition_cnt;
 		$op = [];
@@ -532,6 +537,12 @@ class Arrayz
 	*/
 	public function resolve_whereIn_row()
 	{
+		if(!empty($this->functions['order_by']))
+		{
+			$this->resolve_order_by();
+			unset($this->function['order_by']);
+		}
+
 		extract($this->worker['whereIn']);
 		$op = [];
 		if(!empty($this->worker['select']))
@@ -615,6 +626,11 @@ class Arrayz
 	*/
 	public function resolve_whereNotIn_row()
 	{
+		if(!empty($this->functions['order_by']))
+		{
+			$this->resolve_order_by();
+			unset($this->function['order_by']);
+		}
 		extract($this->worker['whereNotIn']);
 		$op = [];
 		if(!empty($this->worker['select']))
