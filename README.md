@@ -83,7 +83,7 @@ select:
      //Select the ID and name and check that stats is equal to CA. we can chain almost all methods by this.
 
 
-Pluck:
+pluck:
 ------    
       $arrayz($array)->pluck('st')->get(); 
 
@@ -91,7 +91,7 @@ Pluck:
        
       Most usable case is When Posting ($_POST) Iterator based elements. Ex., count_1, count_2
 
-Where:
+where:
 ------
       $arrayz($array)->where('id' ,'1')->get(); 
 
@@ -119,7 +119,17 @@ whereIn:
 
       // Will return the array where matches id is 34 and 35 and preserve the actual key
 
-flat_Where:
+whereNotIn: 
+------
+      $arrayz($array)->whereNotIn( 'id', ['1','3'] )->get(); 
+
+      // Will return the array where not matches id is 34 and 35
+
+      $arrayz($array)->whereIn( 'id', ['1','3'], FALSE )->get(); 
+
+      // Will return the array where matches id is 34 and 35 and will not preserve the key
+
+flat_where:
 ------
       $arrayz($array)->flat_where('< 12', TRUE)->get();      
       
