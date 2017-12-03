@@ -1,6 +1,7 @@
-<?php
+<?php namespace CodeIgniter\Arrayz;
+//namespace CodeIgniter\Arrayz;
 /**
-* Array as Table
+* Array Manipulations
 * Contributor - Giri Annamalai M
 * Version - 2.0
 * PHP version - 7.0
@@ -234,7 +235,7 @@ class Arrayz
 	public function get()
 	{
 		$this->resolver();
- 		unset($this->worker);
+ 		$this->worker = [];
 		if(is_array($this->source) && count($this->source)==0)
  	 	{
  	 		return NULL;
@@ -269,8 +270,8 @@ class Arrayz
 		if(is_array($this->source) && count($this->source)==0)
 		{
 			return NULL;
-		}
-		unset($this->worker);
+		}		
+		$this->worker = [];
 		$this->source = current($this->source);
 		return $this->source;
 	}
@@ -278,11 +279,9 @@ class Arrayz
 	/* Resolve and coordinate combining function calls */
 	public function resolver()
 	{
-
 		foreach ($this->prior_functions as $key => $v) {
 			$this->{$v}();
-		}
-		
+		}		
 		$this->prior_functions = [];
 		foreach ($this->functions as $key => $val) {
 			$this->{$val}();
