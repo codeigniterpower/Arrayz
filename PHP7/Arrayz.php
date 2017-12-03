@@ -1,10 +1,10 @@
 <?php 
 //namespace CodeIgniter\Arrayz;
 /**
-* Array Manipulations
+* Array as Table
 * Contributor - Giri Annamalai M
 * Version - 2.0
-* PHP version - 7.0
+* PHP version - 7.x
 */
 class Arrayz
 {
