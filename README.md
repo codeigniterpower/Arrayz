@@ -270,29 +270,6 @@ toJson:
       $arrayz($array)->where('id','<', '2')->toJson(); 
 
       //Return the output as json_encode
-      
-      
-contains:
---------- 
-      $arrayz($array)->contains('id','34')->get(); 
-
-      //Search for the value id in 34. if found return true else false.
-
-      $arrayz($array)->contains('34')->get(); 
-
-      //Search for the value 34. if found return true else false.
-
-collapse:
----------
-      $arrayz($array)->collapse($array)->get();
-
-      //flatten multidimensional array into single array
-
-has:
-----
-      $arrayz($array)->has('id')->get(); 
-
-      //When the key found returns true
 
 Keys:
 ----
