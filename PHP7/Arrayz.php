@@ -1,5 +1,4 @@
-<?php namespace CodeIgniter\Arrayz;
-//namespace CodeIgniter\Arrayz;
+<?php
 /**
 * Array as Table
 * Contributor - Giri Annamalai M
