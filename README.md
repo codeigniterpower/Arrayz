@@ -281,19 +281,19 @@ toJson:
 
       //Return the output as json_encode
 
-Keys:
+keys:
 ----
       $arrayz($array)->keys()->get(); 
 
       //Returns the key of the array. similar to array_keys
 
-Values:
+values:
 -------
       $arrayz($array)->values()->get(); 
 
       //Returns the values of the array. similar to array_values
 
-Count:
+count:
 ------
      $arrayz($array)->count(); 
 
