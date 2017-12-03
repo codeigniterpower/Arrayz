@@ -259,7 +259,6 @@ class Arrayz
 			return $this->source;		
 		}		
 		foreach ($this->prior_functions as $key => $v) {			
-			echo $v.'_row';
 			$this->{$v.'_row'}();
 		}
 		$this->prior_functions = [];
