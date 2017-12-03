@@ -50,9 +50,9 @@ $array = array (
 select_where:
 ------------
 	
-      $arrayz($array)->select_where('id,name',['id >' => '90'], TRUE)->limit(2,0,TRUE)->get();		
+      $arrayz($array)->select_where('id,name',['id >' => '90'], TRUE)->limit(2,0)->get();		
       
-      //Will return the id, name from selected array where id is less than 90, TRUE represents the 'Preserve Key'.
+      //Will return the id, name from selected array where id is less than 90
       // And the limit is 2, offset from 0 and TRUE to preserve key.
 	
       $arrayz($array)->select_where('id,name', ['id'=> '1'])->get(); 
