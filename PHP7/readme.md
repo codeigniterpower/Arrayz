@@ -1,1 +1,1 @@
-In Development
+Only support PHP7.x
