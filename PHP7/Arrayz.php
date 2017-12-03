@@ -1,5 +1,4 @@
-<?php namespace CodeIgniter\Arrayz;
-//namespace CodeIgniter\Arrayz;
+<?php
 /**
 * Array Manipulations
 * Contributor - Giri Annamalai M
