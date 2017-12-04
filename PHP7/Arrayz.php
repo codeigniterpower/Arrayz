@@ -36,9 +36,9 @@ class Arrayz
 	}	
 
 	public function resolve_select()
-	{
-		if(count($this->field_cnt) ==1 && $this->worker['select']['preserve'])
-		{			
+	{		
+		if(count($this->field_cnt) == 1 && $this->worker['select']['preserve'])
+		{						
 			$this->source = array_column($this->source, $this->select_fields);		
 		}
 		else
@@ -79,7 +79,7 @@ class Arrayz
 	public function where()
 	{		
 		$args = func_get_args();		
-		$preserve = '';		
+		$preserve = TRUE;		
 		if(is_string($args[0]))
 		{
 			if(func_num_args() == 2)
@@ -119,7 +119,7 @@ class Arrayz
 	public function whereNotIn()
 	{
 		$args = func_get_args();
-		$this->worker['whereNotIn'] = ['search_key' => $args[0], 'search_value' => $args[1], 'preserve'=>$args[2] ?? TRUE];		
+		$this->worker['whereNotIn'] = ['search_key' => $args[0], 'search_value' => $args[1], 'preserve'=> $args[2] ?? TRUE];		
 		$this->prior_functions['whereNotIn'] = 'resolve_whereNotIn';
 		return $this;
 	}
@@ -353,7 +353,7 @@ class Arrayz
 					if($resp) $op[$key] = $value;
 				}				
 			}
-			$this->source = $this->worker['where']['preserve'] ? $op : array_values($this->source);
+			$this->source = $this->worker['where']['preserve'] ? $op : array_values($op);
 			return ;					
 		}
 	}
@@ -414,7 +414,7 @@ class Arrayz
 					}
 				}
 			}
-			$this->source = $this->worker['where']['preserve'] ? $op : array_values($this->source);
+			$this->source = $this->worker['where']['preserve'] ? $op : array_values($op);
 			unset($this->functions['select']);			
 			return ;
 		}
@@ -442,7 +442,7 @@ class Arrayz
 					}
 				}				
 			}		
-			$this->source = $this->worker['where']['preserve'] ? $op : array_values($this->source);
+			$this->source = $this->worker['where']['preserve'] ? $op : array_values($op);
 			return ;
 		}
 	}	
@@ -493,7 +493,7 @@ class Arrayz
 		$op = [];		
 		if(!empty($this->worker['select']))
 		{			
-			if($this->field_cnt == 1)
+			if($this->field_cnt == 1  && $this->worker['select']['preserve'])
 			{
 				array_walk($this->source, function(&$src, $k) use ($search_key, $search_value, &$op) {
 					if((isset($src[$search_key])) && in_array( $src[$search_key], $search_value))
@@ -502,7 +502,16 @@ class Arrayz
 					}
 				});
 			}
-			else if($this->field_cnt > 1)
+			else if($this->field_cnt == 1  && !$this->worker['select']['preserve'])
+			{
+				array_walk($this->source, function(&$src, $k) use ($search_key, $search_value, &$op) {
+					if((isset($src[$search_key])) && in_array( $src[$search_key], $search_value))
+					{
+						$op[$k] = array_intersect_key($src, $this->select_fields);
+					}
+				});
+			}
+			else if($this->field_cnt > 1  && !$this->worker['select']['preserve'])
 			{				
 				array_walk($this->source, function(&$src, $k) use ($search_key, $search_value, &$op) {
 					if((isset($src[$search_key])) && in_array( $src[$search_key], $search_value))
@@ -537,12 +546,21 @@ class Arrayz
 		$op = [];
 		if(!empty($this->worker['select']))
 		{			
-			if($this->field_cnt == 1)
+			if($this->field_cnt == 1  && $this->worker['select']['preserve'])
 			{
 				foreach ($this->source as $k => $src) {
 					if((isset($src[$search_key])) && in_array( $src[$search_key], $search_value))
 					{
 						$op[$k] = $src[$this->select_fields];
+						break;
+					}					
+				}
+			}else if($this->field_cnt == 1  && !$this->worker['select']['preserve'])
+			{
+				foreach ($this->source as $k => $src) {
+					if((isset($src[$search_key])) && in_array( $src[$search_key], $search_value))
+					{
+						$op[$k] = array_intersect_key($src, $this->select_fields);
 						break;
 					}					
 				}
@@ -569,7 +587,7 @@ class Arrayz
 				}
 			}		
 		}	
-		$this->source = $preserve ? $op : array_values($this->source);		
+		$this->source = $preserve ? $op : array_values($op);		
 	}
 
 	/*
@@ -581,14 +599,22 @@ class Arrayz
 		$op = [];
 		if(!empty($this->worker['select']))
 		{			
-			if($this->field_cnt == 1)
-			{
-				array_walk($this->source, function(&$src, $k) use ($search_key, $search_value, &$op) {
-					if((isset($src[$search_key])) && !in_array( $src[$search_key], $search_value))
-					{
-						$op[$k] = $src[$this->select_fields];
+			if($this->field_cnt == 1 && $this->worker['select']['preserve'])
+			{				
+				array_walk($this->source, function($src, $k) use ($search_key, $search_value, &$op) {
+					if( (isset($src[$search_key])) && !in_array($src[$search_key], $search_value))
+					{						
+						$op[$k] = $src[$this->select_fields];						
 					}
-				});			
+				});				
+			}else if($this->field_cnt == 1 && !$this->worker['select']['preserve'])
+			{				
+				array_walk($this->source, function($src, $k) use ($search_key, $search_value, &$op) {
+					if( (isset($src[$search_key])) && !in_array($src[$search_key], $search_value))
+					{						
+						$op[$k] = array_intersect_key($src, $this->select_fields);
+					}
+				});				
 			}
 			else if($this->field_cnt > 1)
 			{
@@ -599,7 +625,7 @@ class Arrayz
 					}
 				});				
 			}			
-			$this->source = $preserve ? $op : array_values($this->source);
+			$this->source = $preserve ? $op : array_values($op);
 			unset($this->functions['select']);
 		}
 		else
@@ -607,7 +633,7 @@ class Arrayz
 			$op = array_filter($this->source, function($src) use ($search_key, $search_value) {
 				return (isset($src[$search_key])) && !in_array( $src[$search_key], $search_value);
 			},ARRAY_FILTER_USE_BOTH);			
-			$this->source = $preserve ? $op : array_values($this->source);
+			$this->source = $preserve ? $op : array_values($op);
 		}		
 	}
 
@@ -625,7 +651,7 @@ class Arrayz
 		$op = [];
 		if(!empty($this->worker['select']))
 		{			
-			if($this->field_cnt == 1)
+			if($this->field_cnt == 1 && $this->worker['select']['preserve'])
 			{
 				foreach ($this->source as $k => $src) {
 					if((isset($src[$search_key])) && !in_array( $src[$search_key], $search_value))
@@ -634,8 +660,18 @@ class Arrayz
 						break;
 					}					
 				}
+			}			
+			if($this->field_cnt == 1 && !$this->worker['select']['preserve'])
+			{
+				foreach ($this->source as $k => $src) {
+					if((isset($src[$search_key])) && !in_array( $src[$search_key], $search_value))
+					{
+						$op[$k] = array_intersect_key($src, $this->select_fields);
+						break;
+					}					
+				}
 			}
-			else if($this->field_cnt > 1)
+			else if($this->field_cnt > 1 && !$this->worker['select']['preserve'])
 			{
 				foreach ($this->source as $k => $src) {
 					if((isset($src[$search_key])) && !in_array( $src[$search_key], $search_value))
@@ -657,7 +693,7 @@ class Arrayz
 				}
 			}		
 		}	
-		$this->source = $preserve ? $op : array_values($this->source);		
+		$this->source = $preserve ? $op : array_values($op);		
 	}	
 
 	public function group_by()
@@ -1026,118 +1062,3 @@ class Arrayz
 	}
 }
 /* End of the file Arrayz.php */
-
-	/*
-	* search and return true. 
-	
-	public function contains()
-	{
-		$args = func_get_args();
-		$this->worker['contains'] = ['args' => $args];
-		$this->functions['contains'] = 'resolve_contains';
-		return $this;
-	}	
-
-	public function resolve_contains()
-	{
-		extract($this->worker['contains']);
-		$isValid = false;
-		if ( func_num_args() == 2 ) 
-		{			    
-			$search_key = $args[0];$search_value = $args[1];
-		}
-		else
-		{
-			$search_key = '';$search_value = $args[1];			
-		}
-		//If search value founds, to stop the iteration using try catch method for faster approach
-		try {
-			  array_walk_recursive($this->source, function(&$value, &$key) use(&$search_key, &$search_value){
-		    	if($search_value != ''){
-		    		if($search_value == $value && $key == $search_key){
-		    			$isThere = true;	
-		    		}
-		    	}
-		    	else
-		    	{
-		    		if($search_value == $value){
-		    			$isThere = true;	
-		    		}
-		    	}
-		    	// If Value Exists
-		        if ($isThere) {
-		            throw new Exception;
-		        } 
-		    });
-		   }
-		   catch(Exception $exception) {
-			  $isValid = true;
-		   }
-		return $this->source = $isValid;
-	}
-
-	public function collapse()
-	{
-		$args = func_get_args();
-		$this->worker['collapse'] = ['args' => $args];
-		$this->functions['collapse'] = 'resolve_collapse';
-		return $this;
-	}
-
-	public function resolve_collapse()
-	{
-		extract($this->worker['collapse']);
-		$empty_remove = !empty ($args[0]) ? $args[0] : false ;
-		$op = [];			
-		array_walk_recursive($this->source, function(&$value, &$key) use(&$op, &$empty_remove){
-			if( $empty_remove ){
-				if( $value != '' || $value != NULL )
-				{
-					$op[][$key] = $value;					
-				}
-			}
-			else
-			{
-				$op[][$key] = $value;
-			}								
-		});
-		$this->source = $op;
-	}
-
-	/*
-	* search the key exists and return true if found.
-	
-	public function has()
-	{
-		$args = func_get_args();
-	 	$this->worker['has'] = ['args' => $args];
-	 	$this->functions['has'] = 'resolve_has';
-	}
-
-	/*
-	* search the key exists and return true if found.
-	
-	public function resolve_has()
-	{
-		extract($this->worker['has']);
-		$array = $args[0];
-		$search_key = $args[1];
-		$isValid = false;
-		//If search value founds, to stop the iteration using try catch method for faster approach
-		try {
-			  array_walk_recursive($array, function(&$value, &$key) use(&$search_key){
-	    		if($search_key == $key){
-	    			$isThere = true;	
-	    		}		    	
-		    	// If Value Exists
-		        if ($isThere) {
-		            throw new Exception;
-		        } 
-		    });
-		   }
-		   catch(Exception $exception) {
-			  $isValid = true;
-		   }
-	    return $isValid;	 	
-	}
-*/
