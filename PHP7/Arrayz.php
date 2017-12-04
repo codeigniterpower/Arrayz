@@ -1,6 +1,6 @@
 <?php 
 /**
-* Array Manipulations
+* Array as Table
 * Contributor - Giri Annamalai M
 * Version - 2.0
 * PHP version - 7.0
@@ -234,7 +234,6 @@ class Arrayz
 	public function get()
 	{
 		$this->resolver();
- 		$this->worker = [];
 		if(is_array($this->source) && count($this->source)==0)
  	 	{
  	 		return NULL;
@@ -249,7 +248,7 @@ class Arrayz
 	public function get_row()
 	{			
 		$fn_cnt = count($this->functions);
-		if($fn_cnt == 0)
+		if($fn_cnt == 0 && $this->prior_functions == 0)
 		{				
 			if(is_array($this->source) && count($this->source)==0)
 			{
@@ -265,12 +264,11 @@ class Arrayz
 		foreach ($this->functions as $key => $val) {
 			$this->{$val}();
 		}
-		$this->functions = [];
+		$this->worker = $this->functions = [];		 
 		if(is_array($this->source) && count($this->source)==0)
 		{
 			return NULL;
 		}		
-		$this->worker = [];
 		$this->source = current($this->source);
 		return $this->source;
 	}
@@ -285,7 +283,7 @@ class Arrayz
 		foreach ($this->functions as $key => $val) {
 			$this->{$val}();
 		}
-		$this->functions = [];
+		$this->functions = $this->worker = [];
 	}
 
 	public function resolve_where()
@@ -450,8 +448,7 @@ class Arrayz
 	}	
 	private function format_conditions($cond=''): array
 	{		
-		$o = [];
-		$i = 0;
+		$o = []; $i = 0;
 		array_walk($cond, function($v, $k) use (&$o, &$i) {
 			$key = array_map('trim', explode(" ", $k));			
 			$key[1] = $key[1] ?? '='; //Default is =			
@@ -487,13 +484,6 @@ class Arrayz
 		return (count($select) == 1 && $flat) ? $select[0] : array_flip($select);		
 	}
 
-	/* Get which is prior */
-	public function priorizer()
-	{
-		$sort_by = array_column($this->worker, 'priority');
-		array_multisort($sort_by, SORT_ASC, $this->worker);
-	}
-
 	/*
 	* Like SQL WhereIN . Supports operators.
 	*/
@@ -510,7 +500,7 @@ class Arrayz
 					{
 						$op[$k] = $src[$this->select_fields];
 					}
-				},ARRAY_FILTER_USE_BOTH);				
+				});
 			}
 			else if($this->field_cnt > 1)
 			{				
@@ -519,7 +509,7 @@ class Arrayz
 					{
 						$op[$k] = array_intersect_key($src, $this->select_fields);
 					}
-				},ARRAY_FILTER_USE_BOTH);				
+				});				
 			}			
 			unset($this->functions['select']);
 		}
@@ -598,7 +588,7 @@ class Arrayz
 					{
 						$op[$k] = $src[$this->select_fields];
 					}
-				},ARRAY_FILTER_USE_BOTH);			
+				});			
 			}
 			else if($this->field_cnt > 1)
 			{
@@ -607,7 +597,7 @@ class Arrayz
 					{
 						$op[$k] = array_intersect_key($src, $this->select_fields);
 					}
-				},ARRAY_FILTER_USE_BOTH);				
+				});				
 			}			
 			$this->source = $preserve ? $op : array_values($this->source);
 			unset($this->functions['select']);
@@ -711,13 +701,13 @@ class Arrayz
 	{
 		extract($this->worker['limit']);		
 		$this->source = array_slice($this->source, $offset, $limit, $preserve);		
-		$this->source = $limit == 1 ? array_values($this->source)[0] : $this->source;
+		$this->source = ($limit == 1) ? array_values($this->source)[0] : $this->source;
 	}
 
 	public function count()
 	{
-		$this->get();
-		return count($this->source);
+		$this->resolver();
+		return count($this->source);		
 	}
 
 	/* Select the maximum value using the key */
@@ -1027,7 +1017,6 @@ class Arrayz
 	public function toJson()
 	{
 		$this->resolver();
- 		unset($this->worker);
 		return (empty($this->source)) ? NULL : json_encode($this->source);
 	}
 
@@ -1035,6 +1024,8 @@ class Arrayz
     {
 	 	return NULL;	    
 	}
+}
+/* End of the file Arrayz.php */
 
 	/*
 	* search and return true. 
@@ -1150,5 +1141,3 @@ class Arrayz
 	    return $isValid;	 	
 	}
 */
-}
-/* End of the file Arrayz.php */
