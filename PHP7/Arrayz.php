@@ -735,7 +735,7 @@ class Arrayz
 	{
 		extract($this->worker['limit']);		
 		$this->source = array_slice($this->source, $offset, $limit, $preserve);		
-		$this->source = ($limit == 1) ? array_values($this->source)[0] : $this->source;
+		$this->source = ($limit == 1 && $offset == 0) ? array_values($this->source)[0] : $this->source;
 	}
 
 	public function count()
