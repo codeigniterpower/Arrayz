@@ -155,10 +155,10 @@ class Arrayz
 
 	public function resolve_flat_where_row()
 	{
-		if(!empty($this->functions['order_by']))
+		if(!empty($this->functions['order_by']) && !$this->worker['order_by']['is_flat'])
 		{
 			$this->resolve_order_by();
-			unset($this->function['order_by']);
+			unset($this->functions['order_by']);
 		}
 		$op = [];
 		extract($this->worker['flat_where']);		
@@ -177,36 +177,32 @@ class Arrayz
 	*/
 	public function order_by()
 	{
-		$args = func_get_args();		
-		$sort_mode = ['asc', 'desc'];		
-		if( func_num_args() > 1 && !is_bool($args[1])) //Associatove Array
-		{			
-			$sort_order = ['asc' => SORT_ASC, 'desc' => SORT_DESC];			
-			$args[1] = $args[1] ?? 'asc';
-			$this->worker['order_by'] = ['is_flat' => FALSE,'sort_order' => $sort_order[strtolower($args[1])], 'sort_by_key' => $args[0]];
-		}
-		else
-		{			
-			$args_sort = strtolower($args[0]);			
-			$sort_order = ['asc' => 'asort', 'desc' => 'arsort'];		
-			$preserve = $args[1] ?? TRUE;
-			$this->worker['order_by'] = ['is_flat' => TRUE,'sort_method' => $sort_order[$args_sort],  'preserve' => $preserve];
-		}		
+		$args = func_get_args();
+		$this->worker['order_by'] = ['args' => $args, 'is_flat' => func_num_args() > 1 && !is_bool($args[1]) ? FALSE : TRUE ];
 		$this->functions['order_by'] = 'resolve_order_by';
 		return $this;
 	}
 
+
 	public function resolve_order_by()
 	{
-		extract($this->worker['order_by']);		
-		if(!$is_flat) //Associatove Array
-		{			
-			$sort_by = array_column($this->source, $sort_by_key);
-			array_multisort($sort_by, $sort_order, $this->source);			
-		}	
-		else{
-			$sort_method($this->source);
+		extract($this->worker['order_by']);			
+		$op = [];		
+		$sort_mode = ['asc', 'desc'];		
+		if(isset($this->source[0]) && is_array($this->source[0])) //Associatove Array
+		{	
+			$sort_order = ['asc' => SORT_ASC, 'desc' => SORT_DESC];
+			$sort_by = array_column($this->source, $args[0]);			
+			$args[1] = $args[1] ?? 'asc';
+			array_multisort($sort_by, $sort_order[strtolower($args[1])], $this->source);			
 		}
+		else
+		{
+			$args_sort = strtolower($args[0]);			
+			$sort_order = ['asc' => 'asort', 'desc' => 'arsort'];
+			$sort_order[$args_sort]($this->source);
+			$preserve = isset($args[1]) && $args[1] ? $this->source : array_values($this->source);			
+		}			
 	}
 
 	public function keys()
@@ -261,6 +257,7 @@ class Arrayz
 			$this->{$v.'_row'}();
 		}
 		$this->prior_functions = [];
+		
 		foreach ($this->functions as $key => $val) {
 			$this->{$val}();
 		}
@@ -359,12 +356,13 @@ class Arrayz
 	}
 	
 	public function resolve_where_row()
-	{	
-		if(!empty($this->functions['order_by']))
+	{			
+		if(!empty($this->functions['order_by']) && $this->worker['order_by']['is_flat'] == FALSE)
 		{
 			$this->resolve_order_by();
-			unset($this->function['order_by']);
+			unset($this->functions['order_by']);			
 		}
+		
 		$conditions = $this->conditions;		
 		$cond_cnt = $this->condition_cnt;
 		$op = [];
@@ -539,7 +537,7 @@ class Arrayz
 		if(!empty($this->functions['order_by']))
 		{
 			$this->resolve_order_by();
-			unset($this->function['order_by']);
+			unset($this->functions['order_by']);
 		}
 
 		extract($this->worker['whereIn']);
@@ -645,7 +643,7 @@ class Arrayz
 		if(!empty($this->functions['order_by']))
 		{
 			$this->resolve_order_by();
-			unset($this->function['order_by']);
+			unset($this->functions['order_by']);
 		}
 		extract($this->worker['whereNotIn']);
 		$op = [];
