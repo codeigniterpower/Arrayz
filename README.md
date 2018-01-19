@@ -5,6 +5,12 @@ Usage Instructions:
 ------------------------
 Created for two dimensional associative array / result array from codeigniter.
 
+To download,
+
+For PHP version 5.6 : https://github.com/giriannamalai/Arrayz/tree/master/PHP5.x/V2
+
+For PHP version 7.x : https://github.com/giriannamalai/Arrayz/tree/master/PHP7
+
 1. Load library and create instance: 
 
 	**$this->load->library('Arrayz');**
