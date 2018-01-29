@@ -178,8 +178,8 @@ order_by:
 
       // Will return the array based on where condition sort the array by the name
       
-      $arrayz($array)->select('id', TRUE)->where( ['id >', '2 ])->order_by('asc')->get(); 
-      //Select will return the flat array of Id. and filtered by where and order by Asc
+      $arrayz($array)->select('id')->where('id', '>', '2' ])->order_by('asc')->get(); 
+      //Select will return the array of Id. and filtered by where and order by Asc
 
 limit:
 ------
