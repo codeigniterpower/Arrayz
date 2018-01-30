@@ -15,6 +15,7 @@ class Arrayz
 			$this->source = $array;
 	}
 
+	/* Invoke to create variable to function call*/
 	public function __invoke($source=[])
 	{
 		$this->source = $source;
@@ -35,6 +36,7 @@ class Arrayz
 		return $this;
 	}	
 
+	/* Perform Select Operation*/
 	public function resolve_select()
 	{		
 		if(count($this->field_cnt) == 1 && $this->worker['select']['preserve'])
@@ -845,6 +847,26 @@ class Arrayz
 		$this->source = $op;		
 	}
 
+	/*
+	* Similar to Not Like query in SQL
+	*/
+	public function not_like()
+	{	
+		$args = func_get_args();
+		$search_key = $args[0];
+		$this->worker['like'] = ['search_key' => $args[0], 'search_value' => $args[1]];
+		$this->functions['like'] = 'resolve_not_like';		
+		return $this;
+	}
+
+	public function resolve_not_like(){
+		extract($this->worker['like']);		
+		$op = array_filter($this->source, function($src) use ($search_key, $search_value){
+				return isset($src[$search_key]) && !preg_match('/'.$search_value.'/', $src[$search_key]);
+		},ARRAY_FILTER_USE_BOTH);
+		$this->source = $op;		
+	}
+
 	/* Select a key and sum its values. @param1: single key of array to sum */
 	public function select_sum()
 	{
@@ -1053,10 +1075,32 @@ class Arrayz
 		$this->resolver();
 		return (empty($this->source)) ? NULL : json_encode($this->source);
 	}
+	
+	/*
+	* reverse the array
+	*/
+	public function update()
+	{	
+		$args = func_get_args();		
+		$this->worker['update'] = ['update_data' => $args[0]];
+		$this->functions['update'] = 'resolve_update';	
+		return $this;
+	}
 
+	/*
+	* reverse the array
+	*/
+	public function resolve_update()
+	{	
+		extract($this->worker['update']);		
+		array_walk($this->source, function(&$v, &$k) use ($update_data) {
+			$v = array_replace($v, $update_data);
+		});			
+		return $this;
+	}
 	public function __call($name, $arguments)
     {
-	 	return NULL;	    
+	 	return NULL;
 	}
 }
 /* End of the file Arrayz.php */
