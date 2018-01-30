@@ -134,6 +134,13 @@ whereNotIn:
       $arrayz($array)->whereIn( 'id', ['1','3'], FALSE )->get(); 
 
       // Will return the array where matches id is 34 and 35 and will not preserve the key
+      
+Update: 
+------
+      $arrayz($array)->whereNotIn( 'id', ['1','3'] )->update(['status','1'])->get(); 
+
+      // Will update the array by status = 1 in all array members
+
 
 flat_where:
 ------
@@ -200,6 +207,12 @@ like:
       $arrayz($array)->like('SSN', '01')->get(); 
 
       //Will return the elements SSN number having 01, in anywhere of the string. similar to %like% in mysql.
+      
+not_like:
+------
+      $arrayz($array)->not_like('SSN', '01')->get(); 
+
+      //Will return the elements SSN number NOT having 01, in anywhere of the string. similar to %like% in mysql.      
       
 select_min:
 ----------
