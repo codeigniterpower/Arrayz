@@ -17,7 +17,7 @@ class Arrayz
 
 	public function __invoke($source=[])
 	{
-		$this->source = $source;
+		$this->orig_source = $this->source = $source;
 		return $this;
 	}
 
@@ -1091,7 +1091,8 @@ class Arrayz
 		extract($this->worker['update']);		
 		array_walk($this->source, function(&$v, &$k) use ($update_data) {
 			$v = array_replace($v, $update_data);
-		});			
+		});		
+		$this->source = array_merge($this->source,$this->orig_source);
 		return $this;
 	}
 	public function __call($name, $arguments)
