@@ -1,5 +1,5 @@
 # Arrayz
-Array manipulation library for Codeigniter 3.x and Non-Framework PHP
+Array manipulation library for Codeigniter (3.x & 2.x), All framworks & Non-Framework PHP
 
 Usage Instructions:
 ------------------------
