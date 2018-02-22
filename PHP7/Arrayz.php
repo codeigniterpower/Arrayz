@@ -1060,13 +1060,13 @@ class Arrayz
 	{	
 		$args = func_get_args();
 		$search_key = $args[0];
-		$this->worker['like'] = ['search_key' => $args[0], 'search_value' => $args[1]];
-		$this->functions['like'] = 'resolve_not_like';		
+		$this->worker['not_like'] = ['search_key' => $args[0], 'search_value' => $args[1]];
+		$this->functions['not_like'] = 'resolve_not_like';		
 		return $this;
 	}
 
 	public function resolve_not_like(){
-		extract($this->worker['like']);		
+		extract($this->worker['not_like']);		
 		$op = array_filter($this->source, function($src) use ($search_key, $search_value){
 				return isset($src[$search_key]) && !preg_match('/'.$search_value.'/', $src[$search_key]);
 		},ARRAY_FILTER_USE_BOTH);
